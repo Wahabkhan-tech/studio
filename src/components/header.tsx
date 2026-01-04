@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { Fragment } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
-import { Home, Package, Users, Building, Book, LineChart, Cog, UserCog, ClipboardList, CalendarCheck, PanelLeft, PlusCircle } from 'lucide-react';
+import { Home, Package, Users, Building, Book, LineChart, Cog, UserCog, ClipboardList, CalendarCheck, PanelLeft, PlusCircle, User } from 'lucide-react';
 
 type HeaderProps = {
   role: 'admin' | 'teacher' | 'student';
