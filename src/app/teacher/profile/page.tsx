@@ -1,0 +1,26 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { UserCog } from 'lucide-react';
+
+export default function TeacherProfilePage() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>My Profile</CardTitle>
+        <CardDescription>
+          View and manage your profile information. (Placeholder)
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center">
+        <UserCog className="w-24 h-24 text-muted-foreground mb-4" />
+        <h3 className="text-xl font-semibold">Coming Soon</h3>
+        <p className="text-muted-foreground">This page is under construction.</p>
+      </CardContent>
+    </Card>
+  );
+}
