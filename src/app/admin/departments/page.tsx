@@ -1,26 +1,93 @@
+
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from '@/components/ui/card';
-import { Building } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Building, PlusCircle } from 'lucide-react';
+
+// Mock data for departments - in a real app, this would come from a database
+const departments = [
+    { id: 'd1', name: 'Computer Science', head: 'Dr. Alan Grant' },
+    { id: 'd2', name: 'Software Engineering', head: 'Dr. Ellie Sattler' },
+    { id: 'd3', name: 'Information Technology', head: 'N/A' },
+];
 
 export default function DepartmentManagementPage() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Department Management</CardTitle>
-        <CardDescription>
-          Manage academic departments. (Placeholder)
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center">
-        <Building className="w-24 h-24 text-muted-foreground mb-4" />
-        <h3 className="text-xl font-semibold">Coming Soon</h3>
-        <p className="text-muted-foreground">This page is under construction.</p>
-      </CardContent>
-    </Card>
+    <div className="grid gap-6 md:grid-cols-5">
+      <div className="md:col-span-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Departments</CardTitle>
+            <CardDescription>
+              Viewing all academic departments in the system.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Department Name</TableHead>
+                  <TableHead>Department Head</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {departments.map((dept) => (
+                  <TableRow key={dept.id}>
+                    <TableCell className="font-medium">{dept.name}</TableCell>
+                    <TableCell>{dept.head}</TableCell>
+                    <TableCell>
+                      <Button variant="outline" size="sm">Edit</Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="md:col-span-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Create Department</CardTitle>
+            <CardDescription>
+              Add a new academic department.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="dept-name">Department Name</Label>
+              <Input id="dept-name" placeholder="e.g., Information Technology" />
+            </div>
+             <div className="space-y-2">
+              <Label htmlFor="dept-head">Department Head (Optional)</Label>
+              <Input id="dept-head" placeholder="Select a teacher" />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button className="w-full">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Add Department
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
   );
 }
