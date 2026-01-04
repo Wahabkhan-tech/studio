@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Check, FileText, Send, X } from 'lucide-react';
+import { Check, FileText, Send, X, Inbox } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 
@@ -16,6 +16,24 @@ export default function ProposalReviewPage() {
   const pendingProposals = groups.filter(
     (g) => g.proposal.status === 'PENDING' && g.supervisorId === 't1'
   );
+
+  if (pendingProposals.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Proposal Review</CardTitle>
+          <CardDescription>
+            There are no pending proposals that require your review at the moment.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center">
+            <Inbox className="w-24 h-24 text-muted-foreground mb-4" />
+            <h3 className="text-xl font-semibold">All Caught Up!</h3>
+            <p className="text-muted-foreground">You have reviewed all submitted proposals.</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const proposal = pendingProposals[0]; // For demonstration, we'll review the first pending proposal.
   const supervisor = teachers.find((t) => t.id === proposal.supervisorId);
