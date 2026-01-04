@@ -5,6 +5,7 @@ import {
   Cog,
   Home,
   LineChart,
+  MessageSquare,
   Package,
   Shield,
   Users,
@@ -120,6 +121,18 @@ export default function AdminLayout({
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">Reports</TooltipContent>
+              </Tooltip>
+               <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/admin/chat"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  >
+                    <MessageSquare className="h-5 w-5" />
+                    <span className="sr-only">Chat</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">Chat</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </nav>

@@ -4,6 +4,7 @@ import {
   CalendarCheck,
   ClipboardList,
   Home,
+  MessageSquare,
   Package,
   User,
   UserCog,
@@ -95,6 +96,18 @@ export default function TeacherLayout({
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">Tasks Review</TooltipContent>
+              </Tooltip>
+               <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/teacher/chat"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  >
+                    <MessageSquare className="h-5 w-5" />
+                    <span className="sr-only">Chat</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">Chat</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </nav>

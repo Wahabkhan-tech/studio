@@ -7,14 +7,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import { UserNav } from '@/components/user-nav';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Fragment } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
-import { Home, Package, Users, Building, Book, LineChart, Cog, UserCog, ClipboardList, CalendarCheck, PanelLeft, PlusCircle, User } from 'lucide-react';
+import { Home, Package, Users, Building, Book, LineChart, Cog, UserCog, ClipboardList, CalendarCheck, PanelLeft, PlusCircle, User, MessageSquare } from 'lucide-react';
 
 type HeaderProps = {
   role: 'admin' | 'teacher' | 'student';
@@ -54,6 +53,7 @@ export function Header({ role }: HeaderProps) {
       <Link href="/admin/groups" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Package className="h-5 w-5" />Groups</Link>
       <Link href="/admin/proposals" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Book className="h-5 w-5" />Proposals</Link>
       <Link href="/admin/reports" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><LineChart className="h-5 w-5" />Reports</Link>
+      <Link href="/admin/chat" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><MessageSquare className="h-5 w-5" />Chat</Link>
       <Link href="/admin/settings" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Cog className="h-5 w-5" />Settings</Link>
     </>
   );
@@ -65,6 +65,7 @@ export function Header({ role }: HeaderProps) {
       <Link href="/teacher/proposals" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Book className="h-5 w-5" />Proposal Review</Link>
       <Link href="/teacher/attendance" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><CalendarCheck className="h-5 w-5" />Attendance</Link>
       <Link href="/teacher/tasks" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><ClipboardList className="h-5 w-5" />Tasks Review</Link>
+      <Link href="/teacher/chat" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><MessageSquare className="h-5 w-5" />Chat</Link>
       <Link href="/teacher/profile" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><User className="h-5 w-5" />Profile</Link>
     </>
   );
@@ -77,6 +78,7 @@ export function Header({ role }: HeaderProps) {
       <Link href="/student/groups/join" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Users className="h-5 w-5" />Join Group</Link>
       <Link href="/student/groups/proposal" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Book className="h-5 w-5" />Proposal</Link>
       <Link href="/student/tasks" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><ClipboardList className="h-5 w-5" />Tasks</Link>
+      <Link href="/student/chat" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><MessageSquare className="h-5 w-5" />Chat</Link>
       <Link href="/student/profile" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><User className="h-5 w-5" />Profile</Link>
     </>
   );
