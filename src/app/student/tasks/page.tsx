@@ -1,3 +1,5 @@
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -5,21 +7,65 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ClipboardList } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { tasks, students } from '@/lib/data';
 
 export default function StudentTasksPage() {
+  const myTasks = tasks.filter(t => t.assignedTo === 's1' || t.assignedTo === 's5');
   return (
     <Card>
       <CardHeader>
         <CardTitle>My Tasks</CardTitle>
         <CardDescription>
-          View and manage tasks assigned to you. (Placeholder)
+          View and manage tasks assigned to you for your group project.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center">
-        <ClipboardList className="w-24 h-24 text-muted-foreground mb-4" />
-        <h3 className="text-xl font-semibold">Coming Soon</h3>
-        <p className="text-muted-foreground">This page is under construction.</p>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Task</TableHead>
+              <TableHead>Assigned To</TableHead>
+              <TableHead>Due Date</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {myTasks.map((task) => {
+              const assignee = students.find(s => s.id === task.assignedTo);
+              const isMyTask = task.assignedTo === 's1';
+              return (
+              <TableRow key={task.id}>
+                <TableCell className="font-medium">{task.title}</TableCell>
+                <TableCell>{assignee?.name}</TableCell>
+                <TableCell>{task.dueDate}</TableCell>
+                <TableCell>
+                  <Badge variant={
+                    task.status === 'Done' ? 'default' : 
+                    task.status === 'In Progress' ? 'secondary' : 'outline'
+                  }>
+                    {task.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  {isMyTask && task.status !== 'Done' && (
+                    <Button size="sm">
+                      {task.status === 'To Do' ? 'Start' : 'Submit'}
+                    </Button>
+                  )}
+                </TableCell>
+              </TableRow>
+            )})}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );
