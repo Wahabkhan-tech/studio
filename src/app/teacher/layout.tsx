@@ -8,6 +8,8 @@ import {
   Package,
   User,
   UserCog,
+  Video,
+  FilePen,
 } from 'lucide-react';
 
 import {
@@ -97,6 +99,18 @@ export default function TeacherLayout({
                 </TooltipTrigger>
                 <TooltipContent side="right">Tasks Review</TooltipContent>
               </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/teacher/sessions"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  >
+                    <Video className="h-5 w-5" />
+                    <span className="sr-only">Sessions</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">Sessions</TooltipContent>
+              </Tooltip>
                <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
@@ -108,6 +122,18 @@ export default function TeacherLayout({
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">Chat</TooltipContent>
+              </Tooltip>
+               <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/teacher/evaluation"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  >
+                    <FilePen className="h-5 w-5" />
+                    <span className="sr-only">Evaluation</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">Evaluation</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </nav>
