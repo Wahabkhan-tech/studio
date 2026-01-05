@@ -36,7 +36,7 @@ export default function Home() {
               </Link>
             </Button>
             <Button asChild size="lg" className="w-full" variant="outline">
-              <Link href="/student/dashboard">
+              <Link href="/login/student">
                 <User className="mr-2 h-5 w-5" /> Login as Student
               </Link>
             </Button>
