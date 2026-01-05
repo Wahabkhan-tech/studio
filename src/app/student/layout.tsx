@@ -6,11 +6,10 @@ import {
   Home,
   MessageSquare,
   Package,
-  PlusCircle,
   User,
   Users,
   ShieldQuestion,
-  Lock
+  Lock,
 } from 'lucide-react';
 
 import {
@@ -23,17 +22,23 @@ import { Header } from '@/components/header';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { groups } from '@/lib/data';
 import { cn } from '@/lib/utils';
-
+import { redirect } from 'next/navigation';
 
 export default function StudentLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // In a real app, this data would come from auth/session state.
+  // We simulate it here for demonstration.
   const myGroup = groups.find((g) => g.id === 'g2');
   const isProfileComplete = myGroup?.proposal.status === 'APPROVED';
+  
+  // This logic should be adapted when real authentication is in place.
+  // For now, we manually control it. Uncomment the line below to test the redirect.
+  // if (!isProfileComplete) redirect('/student/onboarding');
 
-  const lockedTooltip = "Complete your profile and get group proposal approved to unlock."
+  const lockedTooltip = "Complete onboarding to unlock.";
 
   return (
     <SidebarProvider>
@@ -41,17 +46,17 @@ export default function StudentLayout({
         <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
           <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
             <Link
-              href="/student/dashboard"
+              href={isProfileComplete ? "/student/dashboard" : "/student/onboarding"}
               className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
             >
               <User className="h-4 w-4 transition-all group-hover:scale-110" />
               <span className="sr-only">CapstoneFlow</span>
             </Link>
             <TooltipProvider>
-              <Tooltip>
+               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    href="/student/dashboard"
+                    href={isProfileComplete ? "/student/dashboard" : "/student/onboarding"}
                     className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   >
                     <Home className="h-5 w-5" />
@@ -61,67 +66,19 @@ export default function StudentLayout({
                 <TooltipContent side="right">Dashboard</TooltipContent>
               </Tooltip>
 
-              {!myGroup && (
-                <>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href="/student/groups/create"
-                        className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                      >
-                        <PlusCircle className="h-5 w-5" />
-                        <span className="sr-only">Create Group</span>
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">Create Group</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href="/student/groups/join"
-                        className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                      >
-                        <Users className="h-5 w-5" />
-                        <span className="sr-only">Join Group</span>
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">Join Group</TooltipContent>
-                  </Tooltip>
-                </>
-              )}
-
-              {myGroup && (
-                <>
-                   <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href={`/student/groups/${myGroup.id}`}
-                        className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                      >
-                        <Package className="h-5 w-5" />
-                        <span className="sr-only">My Group</span>
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">My Group</TooltipContent>
-                  </Tooltip>
-                   <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href={`/student/groups/${myGroup.id}?tab=proposal`}
-                        className={cn(
-                          "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
-                          myGroup.proposal.status === 'APPROVED' && "text-green-500 hover:text-green-600"
-                        )}
-                      >
-                        <ShieldQuestion className="h-5 w-5" />
-                        <span className="sr-only">Proposal</span>
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">Proposal</TooltipContent>
-                  </Tooltip>
-                </>
-              )}
-
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={isProfileComplete ? `/student/groups/${myGroup?.id}` : "#"}
+                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", isProfileComplete ? "hover:text-foreground" : "cursor-not-allowed opacity-50")}
+                  >
+                    {isProfileComplete ? <Package className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
+                    <span className="sr-only">My Group</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">{isProfileComplete ? "My Group" : lockedTooltip}</TooltipContent>
+              </Tooltip>
+              
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
@@ -151,16 +108,15 @@ export default function StudentLayout({
                <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    href={myGroup ? "/student/chat" : "#"}
-                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", myGroup ? "hover:text-foreground" : "cursor-not-allowed opacity-50")}
+                    href={isProfileComplete ? "/student/chat" : "#"}
+                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", isProfileComplete ? "hover:text-foreground" : "cursor-not-allowed opacity-50")}
                   >
-                    {myGroup ? <MessageSquare className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
+                    {isProfileComplete ? <MessageSquare className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
                     <span className="sr-only">Chat</span>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent side="right">{myGroup ? "Chat" : "Join a group to enable chat"}</TooltipContent>
+                <TooltipContent side="right">{isProfileComplete ? "Chat" : lockedTooltip}</TooltipContent>
               </Tooltip>
-
             </TooltipProvider>
           </nav>
           <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
