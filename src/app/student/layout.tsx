@@ -138,6 +138,19 @@ export default function StudentLayout({
                <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
+                    href={isProfileComplete ? "/student/sessions" : "#"}
+                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", isProfileComplete ? "hover:text-foreground" : "cursor-not-allowed opacity-50")}
+                  >
+                    {isProfileComplete ? <Users className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
+                    <span className="sr-only">Sessions</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">{isProfileComplete ? "Sessions" : lockedTooltip}</TooltipContent>
+              </Tooltip>
+
+               <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
                     href={myGroup ? "/student/chat" : "#"}
                     className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", myGroup ? "hover:text-foreground" : "cursor-not-allowed opacity-50")}
                   >

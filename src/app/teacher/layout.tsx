@@ -8,8 +8,8 @@ import {
   Package,
   User,
   UserCog,
-  Video,
   FilePen,
+  Users,
 } from 'lucide-react';
 
 import {
@@ -105,7 +105,7 @@ export default function TeacherLayout({
                     href="/teacher/sessions"
                     className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   >
-                    <Video className="h-5 w-5" />
+                    <Users className="h-5 w-5" />
                     <span className="sr-only">Sessions</span>
                   </Link>
                 </TooltipTrigger>

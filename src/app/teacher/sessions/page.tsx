@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Video } from 'lucide-react';
+import { PlusCircle, Users } from 'lucide-react';
 import { groups } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -21,11 +21,11 @@ import {
 export default function SessionManagementPage() {
     const teacherGroups = groups.filter(g => g.supervisorId === 't1');
     const upcomingSessions = [
-        { id: 'ses1', title: 'Weekly Sync - AI Innovators', group: 'AI Innovators', date: '2024-07-25T10:00:00', status: 'SCHEDULED' },
-        { id: 'ses2', title: 'Proposal Discussion - Web Wizards', group: 'Web Wizards', date: '2024-07-26T14:00:00', status: 'SCHEDULED' },
+        { id: 'ses1', title: 'Weekly Sync - AI Innovators', group: 'AI Innovators', date: '2024-07-25', status: 'SCHEDULED' },
+        { id: 'ses2', title: 'Proposal Discussion - Web Wizards', group: 'Web Wizards', date: '2024-07-26', status: 'SCHEDULED' },
     ];
     const pastSessions = [
-        { id: 'ses3', title: 'Initial Kick-off', group: 'AI Innovators', date: '2024-07-18T10:00:00', status: 'COMPLETED' },
+        { id: 'ses3', title: 'Initial Kick-off', group: 'AI Innovators', date: '2024-07-18', status: 'COMPLETED' },
     ]
 
   return (
@@ -33,20 +33,20 @@ export default function SessionManagementPage() {
         <div className="flex justify-between items-center">
             <div>
                 <h1 className="text-3xl font-bold">Session Management</h1>
-                <p className="text-muted-foreground">Schedule, start, and review live video sessions with your groups.</p>
+                <p className="text-muted-foreground">Schedule, and review academic sessions with your groups.</p>
             </div>
             <Dialog>
                 <DialogTrigger asChild>
                     <Button>
                         <PlusCircle className="mr-2 h-4 w-4" />
-                        Create Session
+                        Schedule Session
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                    <DialogTitle>Create New Session</DialogTitle>
+                    <DialogTitle>Schedule New Session</DialogTitle>
                     <DialogDescription>
-                        Schedule a new live session for one or more groups.
+                        Schedule a new session for one or more groups.
                     </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
@@ -55,8 +55,8 @@ export default function SessionManagementPage() {
                             <Input id="title" placeholder="e.g., Weekly Progress Sync" />
                         </div>
                          <div className="space-y-2">
-                            <Label htmlFor="date">Date & Time</Label>
-                            <Input id="date" type="datetime-local" />
+                            <Label htmlFor="date">Date</Label>
+                            <Input id="date" type="date" />
                         </div>
                         <div className="space-y-2">
                             <Label>Select Groups</Label>
@@ -90,11 +90,11 @@ export default function SessionManagementPage() {
                             <div>
                                 <h3 className="font-semibold">{session.title}</h3>
                                 <p className="text-sm text-muted-foreground">
-                                    {new Date(session.date).toLocaleString()}
+                                    Date: {new Date(session.date).toLocaleDateString()}
                                 </p>
                             </div>
-                            <Button asChild>
-                                <Link href={`/teacher/sessions/${session.id}`}><Video className="mr-2 h-4 w-4" /> Start Session</Link>
+                            <Button variant="outline" size="sm">
+                                View Details
                             </Button>
                         </CardContent>
                     </Card>
@@ -119,12 +119,12 @@ export default function SessionManagementPage() {
                             <div>
                                 <h3 className="font-semibold">{session.title}</h3>
                                 <p className="text-sm text-muted-foreground">
-                                    {new Date(session.date).toLocaleString()}
+                                    Date: {new Date(session.date).toLocaleDateString()}
                                 </p>
                             </div>
                             <div className='flex gap-2 items-center'>
                                 <Badge variant="secondary">{session.status}</Badge>
-                                <Button variant="outline" size="sm">View Details</Button>
+                                <Button variant="outline" size="sm">View Summary</Button>
                             </div>
                         </CardContent>
                     </Card>
