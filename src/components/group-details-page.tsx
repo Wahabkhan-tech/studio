@@ -16,15 +16,40 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Check, FileText, Send, PlusCircle, X, Pencil } from 'lucide-react';
 import Link from 'next/link';
-import { tasks as allTasks, students, sessions } from '@/lib/data';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-import { Switch } from './ui/switch';
+import {
+  tasks as allTasks,
+  students as allStudents,
+  sessions,
+} from '@/lib/data';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './ui/table';
 import { useSearchParams } from 'next/navigation';
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/dialog';
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from './ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 import { Slider } from './ui/slider';
+import { cn } from '@/lib/utils';
 
 interface GroupDetailsPageProps {
   role: UserRole;
@@ -42,8 +67,8 @@ export function GroupDetailsPage({
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'overview';
   const groupTasks = allTasks.slice(0, 3); // Demo tasks
-  const loggedInStudent = students[0];
-  const groupSessions = sessions.filter(s => s.groupId === group.id);
+  const loggedInStudent = allStudents[0];
+  const groupSessions = sessions.filter((s) => s.groupId === group.id);
 
   return (
     <div className="space-y-6">
@@ -73,7 +98,7 @@ export function GroupDetailsPage({
       </Card>
 
       <Tabs defaultValue={defaultTab}>
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="members">Members</TabsTrigger>
           <TabsTrigger value="proposal">Proposal</TabsTrigger>
@@ -109,17 +134,27 @@ export function GroupDetailsPage({
               <CardTitle>Group Members</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-               {supervisor && (
+              {supervisor && (
                 <div>
                   <h4 className="font-semibold mb-2">Supervisor</h4>
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={PlaceHolderImages.find(p=>p.id === supervisor.avatar)?.imageUrl} />
-                      <AvatarFallback>{supervisor.name.charAt(0)}</AvatarFallback>
+                      <AvatarImage
+                        src={
+                          PlaceHolderImages.find(
+                            (p) => p.id === supervisor.avatar
+                          )?.imageUrl
+                        }
+                      />
+                      <AvatarFallback>
+                        {supervisor.name.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
                     <div>
                       <p className="font-medium">{supervisor.name}</p>
-                      <p className="text-sm text-muted-foreground">{supervisor.email}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {supervisor.email}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -127,22 +162,40 @@ export function GroupDetailsPage({
               <div>
                 <h4 className="font-semibold mb-2">Students</h4>
                 <div className="grid gap-4 sm:grid-cols-2">
-                {members.map(member => {
-                  const avatar = PlaceHolderImages.find(p => p.id === member.avatar);
-                  return (
-                    <div key={member.id} className="flex items-center gap-4 p-2 rounded-lg">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={avatar?.imageUrl} />
-                        <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                       <div>
-                        <p className="font-medium">{member.name} {group.leaderId === member.id && <Badge variant="outline">Leader</Badge>}</p>
-                        <p className="text-sm text-muted-foreground">{member.email}</p>
-                        {(role === 'teacher' || role === 'admin') && <p className="text-sm text-muted-foreground">Attendance: 95%</p>}
+                  {members.map((member) => {
+                    const avatar = PlaceHolderImages.find(
+                      (p) => p.id === member.avatar
+                    );
+                    return (
+                      <div
+                        key={member.id}
+                        className="flex items-center gap-4 p-2 rounded-lg"
+                      >
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={avatar?.imageUrl} />
+                          <AvatarFallback>
+                            {member.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">
+                            {member.name}{' '}
+                            {group.leaderId === member.id && (
+                              <Badge variant="outline">Leader</Badge>
+                            )}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {member.email}
+                          </p>
+                          {(role === 'teacher' || role === 'admin') && (
+                            <p className="text-sm text-muted-foreground">
+                              Attendance: 95%
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )
-                })}
+                    );
+                  })}
                 </div>
               </div>
             </CardContent>
@@ -150,116 +203,175 @@ export function GroupDetailsPage({
         </TabsContent>
 
         <TabsContent value="proposal">
-           <Card>
-             <CardHeader>
-               <CardTitle>Project Proposal</CardTitle>
-                <CardDescription>Status: <Badge variant={group.proposal.status === 'APPROVED' ? 'default' : 'secondary'}>{group.proposal.status.replace(/_/g, ' ')}</Badge></CardDescription>
-             </CardHeader>
-             <CardContent className="space-y-4">
-                <p className="text-muted-foreground">{group.proposal.description}</p>
-                <Button variant="outline" asChild>
-                    <Link href="#"><FileText className="mr-2 h-4 w-4" /> View Full Proposal.pdf</Link>
-                </Button>
-                {(role === 'teacher' || role === 'admin') && (
-                  <div className="pt-4 border-t">
-                      <h4 className="font-semibold mb-2">Your Feedback</h4>
-                      <Textarea placeholder="Provide feedback..." defaultValue={group.proposal.feedback}/>
-                      <div className="flex gap-2 mt-2 justify-end">
-                        <Button variant="outline"><Send className="mr-2 h-4 w-4" />Request Changes</Button>
-                        <Button variant="destructive"><X className="mr-2 h-4 w-4" />Reject</Button>
-                        <Button><Check className="mr-2 h-4 w-4" />Approve</Button>
-                      </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Proposal</CardTitle>
+              <CardDescription>
+                Status:{' '}
+                <Badge
+                  variant={
+                    group.proposal.status === 'APPROVED'
+                      ? 'default'
+                      : 'secondary'
+                  }
+                >
+                  {group.proposal.status.replace(/_/g, ' ')}
+                </Badge>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                {group.proposal.description}
+              </p>
+              <Button variant="outline" asChild>
+                <Link href="#">
+                  <FileText className="mr-2 h-4 w-4" /> View Full Proposal.pdf
+                </Link>
+              </Button>
+              {(role === 'teacher' || role === 'admin') && (
+                <div className="pt-4 border-t">
+                  <h4 className="font-semibold mb-2">Your Feedback</h4>
+                  <Textarea
+                    placeholder="Provide feedback..."
+                    defaultValue={group.proposal.feedback}
+                  />
+                  <div className="flex gap-2 mt-2 justify-end">
+                    <Button variant="outline">
+                      <Send className="mr-2 h-4 w-4" />
+                      Request Changes
+                    </Button>
+                    <Button variant="destructive">
+                      <X className="mr-2 h-4 w-4" />
+                      Reject
+                    </Button>
+                    <Button>
+                      <Check className="mr-2 h-4 w-4" />
+                      Approve
+                    </Button>
                   </div>
-                )}
-             </CardContent>
-           </Card>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
-        
+
         <TabsContent value="tasks">
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle>Task Management</CardTitle>
-                    {(role === 'teacher' || (role === 'student' && group.leaderId === loggedInStudent.id)) && (
-                       <Dialog>
-                            <DialogTrigger asChild>
-                                <Button size="sm" className="gap-1">
-                                    <PlusCircle className="h-3.5 w-3.5" />
-                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                        Add New Task
-                                    </span>
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>Create New Task</DialogTitle>
-                                    <DialogDescription>
-                                        Assign a new task to a group member.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="grid gap-4 py-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="task-title">Task Title</Label>
-                                        <Input id="task-title" placeholder="e.g., Implement user authentication" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="task-student">Assign To</Label>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select a student" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {members.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="task-due-date">Due Date</Label>
-                                        <Input id="task-due-date" type="date" />
-                                    </div>
-                                </div>
-                                <DialogFooter>
-                                    <Button type="submit">Add Task</Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Task Management</CardTitle>
+              {(role === 'teacher' ||
+                (role === 'student' && group.leaderId === loggedInStudent.id)) && (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="gap-1">
+                      <PlusCircle className="h-3.5 w-3.5" />
+                      <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                        Add New Task
+                      </span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create New Task</DialogTitle>
+                      <DialogDescription>
+                        Assign a new task to a group member.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="task-title">Task Title</Label>
+                        <Input
+                          id="task-title"
+                          placeholder="e.g., Implement user authentication"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="task-student">Assign To</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a student" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {members.map((s) => (
+                              <SelectItem key={s.id} value={s.id}>
+                                {s.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="task-due-date">Due Date</Label>
+                        <Input id="task-due-date" type="date" />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button type="submit">Add Task</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Task</TableHead>
+                    <TableHead>Assigned To</TableHead>
+                    <TableHead>Status</TableHead>
+                    {role !== 'admin' && (
+                      <TableHead className="text-right">Action</TableHead>
                     )}
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Task</TableHead>
-                                <TableHead>Assigned To</TableHead>
-                                <TableHead>Status</TableHead>
-                                {role !== 'admin' && <TableHead className="text-right">Action</TableHead>}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {groupTasks.map(task => {
-                                const assignee = members.find(m => m.id === task.assignedTo);
-                                return (
-                                <TableRow key={task.id}>
-                                    <TableCell className="font-medium">{task.title}</TableCell>
-                                    <TableCell>{assignee?.name}</TableCell>
-                                    <TableCell><Badge variant={task.status === 'Done' ? 'default' : task.status === 'In Progress' ? 'secondary' : 'outline'}>{task.status}</Badge></TableCell>
-                                    {role === 'student' && (
-                                        <TableCell className="text-right">
-                                            {task.assignedTo === loggedInStudent.id && task.status !== 'Done' && <Button size="sm">Submit</Button>}
-                                        </TableCell>
-                                    )}
-                                     {role === 'teacher' && (
-                                        <TableCell className="text-right">
-                                            <Button size="sm" variant="outline">View</Button>
-                                        </TableCell>
-                                    )}
-                                </TableRow>
-                            )})}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {groupTasks.map((task) => {
+                    const assignee = members.find(
+                      (m) => m.id === task.assignedTo
+                    );
+                    return (
+                      <TableRow key={task.id}>
+                        <TableCell className="font-medium">
+                          {task.title}
+                        </TableCell>
+                        <TableCell>{assignee?.name}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              task.status === 'Done'
+                                ? 'default'
+                                : task.status === 'In Progress'
+                                ? 'secondary'
+                                : 'outline'
+                            }
+                          >
+                            {task.status}
+                          </Badge>
+                        </TableCell>
+                        {role === 'student' && (
+                          <TableCell className="text-right">
+                            {task.assignedTo === loggedInStudent.id &&
+                              task.status !== 'Done' && (
+                                <Button size="sm">Submit</Button>
+                              )}
+                          </TableCell>
+                        )}
+                        {role === 'teacher' && (
+                          <TableCell className="text-right">
+                            <Button size="sm" variant="outline">
+                              View
+                            </Button>
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </TabsContent>
-        
+
         <TabsContent value="evaluation">
             <Card>
                 <CardHeader>
@@ -300,76 +412,60 @@ export function GroupDetailsPage({
         </TabsContent>
 
         <TabsContent value="attendance">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Attendance Record</CardTitle>
-                    <CardDescription>
-                        {role === 'student'
-                            ? "Your attendance record for scheduled sessions."
-                            : `Attendance record for ${group.name}.`
-                        }
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Session Date</TableHead>
-                                <TableHead>Session Title</TableHead>
-                                {role === 'student' ? (
-                                    <TableHead className="text-right">Your Status</TableHead>
-                                ) : (
-                                    <>
-                                        <TableHead>Student</TableHead>
-                                        <TableHead className="text-right">Status</TableHead>
-                                    </>
-                                )}
-                                {role === 'teacher' && <TableHead className="text-right">Actions</TableHead>}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {groupSessions.flatMap(session => 
-                                role === 'student' ? (
-                                    <TableRow key={`${session.id}-${loggedInStudent.id}`}>
-                                        <TableCell>{new Date(session.date).toLocaleDateString()}</TableCell>
-                                        <TableCell>{session.title}</TableCell>
-                                        <TableCell className="text-right">
-                                            <Badge variant={session.attendees.includes(loggedInStudent.id) ? 'default' : 'destructive'}>
-                                                {session.attendees.includes(loggedInStudent.id) ? 'Present' : 'Absent'}
-                                            </Badge>
-                                        </TableCell>
-                                    </TableRow>
-                                ) : (
-                                    members.map(member => (
-                                        <TableRow key={`${session.id}-${member.id}`}>
-                                            <TableCell>{new Date(session.date).toLocaleDateString()}</TableCell>
-                                            <TableCell>{session.title}</TableCell>
-                                            <TableCell>{member.name}</TableCell>
-                                            <TableCell className="text-right">
-                                                <Badge variant={session.attendees.includes(member.id) ? 'default' : 'destructive'}>
-                                                    {session.attendees.includes(member.id) ? 'Present' : 'Absent'}
-                                                </Badge>
-                                            </TableCell>
-                                             {role === 'teacher' && (
-                                                <TableCell className="text-right">
-                                                    <Button variant="ghost" size="icon">
-                                                        <Pencil className="h-4 w-4" />
-                                                    </Button>
-                                                </TableCell>
-                                            )}
-                                        </TableRow>
-                                    ))
-                                )
-                            )}
-                            {groupSessions.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={role === 'student' ? 3 : 5} className="text-center">No sessions scheduled for this group yet.</TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Attendance Scoreboard</CardTitle>
+              <CardDescription>
+                Track attendance for all scheduled sessions.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {groupSessions.length > 0 ? (
+              <div className="border rounded-lg overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="font-semibold">Student</TableHead>
+                      {groupSessions.map((session) => (
+                        <TableHead key={session.id} className="text-center">
+                          {new Date(session.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {members.map((member) => (
+                      <TableRow key={member.id}>
+                        <TableCell className="font-medium">{member.name}</TableCell>
+                        {groupSessions.map((session) => {
+                          const isPresent = session.attendees.includes(member.id);
+                          return (
+                            <TableCell key={session.id} className="text-center">
+                              {role === 'teacher' ? (
+                                <div className='flex justify-center gap-1'>
+                                  <Button size="icon" variant={isPresent ? 'default' : 'outline'} className='h-7 w-7 rounded-full'>P</Button>
+                                  <Button size="icon" variant={!isPresent ? 'destructive' : 'outline'} className='h-7 w-7 rounded-full'>A</Button>
+                                </div>
+                              ) : (
+                                <Badge variant={isPresent ? 'default' : 'destructive'}>
+                                  {isPresent ? 'P' : 'A'}
+                                </Badge>
+                              )}
+                            </TableCell>
+                          )
+                        })}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+               ) : (
+                 <div className="text-center py-8 text-muted-foreground">
+                    No sessions have been scheduled for this group yet.
+                 </div>
+               )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
