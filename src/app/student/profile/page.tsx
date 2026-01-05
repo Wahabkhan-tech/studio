@@ -72,7 +72,7 @@ export default function ProfileCompletionPage() {
         </div>
         
         <div className="space-y-2">
-            <Label htmlFor="interests">Interests</Label>
+            <Label htmlFor="interests">Interests & Group Preferences</Label>
             <Textarea id="interests" placeholder="I'm passionate about..." defaultValue={student.interests} />
         </div>
 
