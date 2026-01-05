@@ -1,4 +1,5 @@
-import { MoreHorizontal } from 'lucide-react';
+'use client';
+import { MoreHorizontal, PlusCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,15 +28,87 @@ import {
 import { students } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function StudentManagementPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Student Management</CardTitle>
-        <CardDescription>
-          Approve new student registrations and manage existing accounts.
-        </CardDescription>
+        <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Student Management</CardTitle>
+              <CardDescription>
+                Approve new student registrations and manage existing accounts.
+              </CardDescription>
+            </div>
+             <Dialog>
+            <DialogTrigger asChild>
+              <Button size="sm" className="gap-1">
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Add Student
+                </span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add New Student</DialogTitle>
+                <DialogDescription>
+                  Enter the details for the new student.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input id="name" placeholder="e.g., John Doe" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input id="email" type="email" placeholder="e.g., john.doe@example.com" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="semester">Semester</Label>
+                   <Select>
+                    <SelectTrigger id="semester">
+                        <SelectValue placeholder="Select semester" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {[...Array(8)].map((_, i) => (
+                            <SelectItem key={i+1} value={String(i+1)}>{i+1}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                </div>
+                 <div className="space-y-2">
+                  <Label htmlFor="status">Status</Label>
+                   <Select defaultValue="INACTIVE">
+                    <SelectTrigger id="status">
+                        <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="ACTIVE">Active</SelectItem>
+                        <SelectItem value="INACTIVE">Inactive</SelectItem>
+                    </SelectContent>
+                </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit">Add Student</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
         <Table>
