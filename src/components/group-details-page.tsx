@@ -132,7 +132,7 @@ export function GroupDetailsPage({
                        <div>
                         <p className="font-medium">{member.name} {group.leaderId === member.id && <Badge variant="outline">Leader</Badge>}</p>
                         <p className="text-sm text-muted-foreground">{member.email}</p>
-                        {role === 'teacher' && <p className="text-sm text-muted-foreground">Attendance: 95%</p>}
+                        {(role === 'teacher' || role === 'admin') && <p className="text-sm text-muted-foreground">Attendance: 95%</p>}
                       </div>
                     </div>
                   )
@@ -154,7 +154,7 @@ export function GroupDetailsPage({
                 <Button variant="outline" asChild>
                     <Link href="#"><FileText className="mr-2 h-4 w-4" /> View Full Proposal.pdf</Link>
                 </Button>
-                {role === 'teacher' && (
+                {(role === 'teacher' || role === 'admin') && (
                   <div className="pt-4 border-t">
                       <h4 className="font-semibold mb-2">Your Feedback</h4>
                       <Textarea placeholder="Provide feedback..." defaultValue={group.proposal.feedback}/>
@@ -210,7 +210,7 @@ export function GroupDetailsPage({
             <Card>
                 <CardHeader><CardTitle>Attendance</CardTitle></CardHeader>
                 <CardContent>
-                    {role === 'teacher' && (
+                    {(role === 'teacher' || role === 'admin') && (
                         <Table>
                            <TableHeader><TableRow><TableHead>Student</TableHead><TableHead className="text-right">Mark Attendance</TableHead></TableRow></TableHeader>
                             <TableBody>
@@ -220,7 +220,7 @@ export function GroupDetailsPage({
                                         <TableCell className="text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <UserX className="text-muted-foreground" size={16} />
-                                                <Switch defaultChecked />
+                                                <Switch defaultChecked disabled={role === 'admin'} />
                                                 <UserCheck className="text-primary" size={16} />
                                             </div>
                                         </TableCell>
@@ -255,7 +255,7 @@ export function GroupDetailsPage({
              <Card>
                 <CardHeader><CardTitle>Evaluation</CardTitle></CardHeader>
                 <CardContent className="text-center text-muted-foreground py-12">
-                    {role === 'teacher' && <p>Evaluation entry form coming soon.</p>}
+                    {(role === 'teacher' || role === 'admin') && <p>Evaluation entry form coming soon.</p>}
                     {role === 'student' && <p>Final results will be displayed here after evaluation.</p>}
                 </CardContent>
             </Card>

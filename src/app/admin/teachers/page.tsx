@@ -1,3 +1,4 @@
+
 import { MoreHorizontal, PlusCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,7 @@ import {
 import { teachers } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import Link from 'next/link';
 
 export default function TeacherManagementPage() {
   return (
@@ -82,7 +84,9 @@ export default function TeacherManagementPage() {
                   </Avatar>
                 </TableCell>
                 <TableCell className="font-medium">
-                  <div>{teacher.name}</div>
+                  <Link href={`/admin/teachers/${teacher.id}/groups`} className="text-primary hover:underline">
+                    {teacher.name}
+                  </Link>
                   <div className="text-sm text-muted-foreground md:hidden">{teacher.email}</div>
                 </TableCell>
                 <TableCell>

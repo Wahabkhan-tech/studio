@@ -18,7 +18,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Building, PlusCircle } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
+import Link from 'next/link';
 
 // Mock data for departments - in a real app, this would come from a database
 const departments = [
@@ -50,7 +51,11 @@ export default function DepartmentManagementPage() {
               <TableBody>
                 {departments.map((dept) => (
                   <TableRow key={dept.id}>
-                    <TableCell className="font-medium">{dept.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link href={`/admin/departments/${dept.id}/teachers`} className="text-primary hover:underline">
+                        {dept.name}
+                      </Link>
+                    </TableCell>
                     <TableCell>{dept.head}</TableCell>
                     <TableCell>
                       <Button variant="outline" size="sm">Edit</Button>
