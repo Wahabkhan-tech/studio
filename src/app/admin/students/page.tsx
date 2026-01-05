@@ -73,6 +73,10 @@ export default function StudentManagementPage() {
                   <Label htmlFor="name">Full Name</Label>
                   <Input id="name" placeholder="e.g., John Doe" />
                 </div>
+                 <div className="space-y-2">
+                  <Label htmlFor="reg-no">Registration / Seat Number</Label>
+                  <Input id="reg-no" placeholder="e.g., EB12345" />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
                   <Input id="email" type="email" placeholder="e.g., john.doe@example.com" />
