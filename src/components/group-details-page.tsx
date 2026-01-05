@@ -71,13 +71,12 @@ export function GroupDetailsPage({
       </Card>
 
       <Tabs defaultValue={defaultTab}>
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-7">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="members">Members</TabsTrigger>
           <TabsTrigger value="proposal">Proposal</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="attendance">Attendance</TabsTrigger>
-          <TabsTrigger value="chat">Chat</TabsTrigger>
           <TabsTrigger value="evaluation">Evaluation</TabsTrigger>
         </TabsList>
 
@@ -291,15 +290,6 @@ export function GroupDetailsPage({
                             </div>
                         </div>
                     )}
-                </CardContent>
-            </Card>
-        </TabsContent>
-        
-        <TabsContent value="chat">
-            <Card>
-                <CardHeader><CardTitle>Group Chat & Logs</CardTitle></CardHeader>
-                <CardContent className="text-center text-muted-foreground py-12">
-                  <p>Chat functionality coming soon.</p>
                 </CardContent>
             </Card>
         </TabsContent>
