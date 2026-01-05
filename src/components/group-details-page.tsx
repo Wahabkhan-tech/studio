@@ -43,6 +43,13 @@ export function GroupDetailsPage({
   const groupTasks = allTasks.slice(0, 3); // Demo tasks
   const loggedInStudent = students[0];
 
+  const studentAttendance = [
+      { date: '2024-07-22', status: 'Present' },
+      { date: '2024-07-15', status: 'Present' },
+      { date: '2024-07-08', status: 'Absent' },
+      { date: '2024-07-01', status: 'Present' },
+  ]
+
   return (
     <div className="space-y-6">
       <Card>
@@ -71,13 +78,12 @@ export function GroupDetailsPage({
       </Card>
 
       <Tabs defaultValue={defaultTab}>
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="members">Members</TabsTrigger>
           <TabsTrigger value="proposal">Proposal</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="attendance">Attendance</TabsTrigger>
-          <TabsTrigger value="evaluation">Evaluation</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -260,7 +266,11 @@ export function GroupDetailsPage({
 
         <TabsContent value="attendance">
             <Card>
-                <CardHeader><CardTitle>Attendance</CardTitle></CardHeader>
+                <CardHeader>
+                    <CardTitle>Attendance</CardTitle>
+                    {(role === 'teacher' || role === 'admin') && <CardDescription>Mark attendance for each student for today's session.</CardDescription>}
+                    {role === 'student' && <CardDescription>Your attendance record for this project.</CardDescription>}
+                </CardHeader>
                 <CardContent>
                     {(role === 'teacher' || role === 'admin') && (
                         <Table>
@@ -282,28 +292,28 @@ export function GroupDetailsPage({
                         </Table>
                     )}
                      {role === 'student' && (
-                        <div>
-                            <p className="text-muted-foreground mb-4">Your attendance record for this project.</p>
-                            <div className="flex items-center gap-4">
-                                <span className="text-lg font-bold">95%</span>
-                                <Progress value={95} className="w-full" />
-                            </div>
-                        </div>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead className="text-right">Status</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {studentAttendance.map((record) => (
+                                    <TableRow key={record.date}>
+                                        <TableCell>{record.date}</TableCell>
+                                        <TableCell className="text-right">
+                                            <Badge variant={record.status === 'Present' ? 'default' : 'destructive'}>{record.status}</Badge>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     )}
                 </CardContent>
             </Card>
         </TabsContent>
-        
-        <TabsContent value="evaluation">
-             <Card>
-                <CardHeader><CardTitle>Evaluation</CardTitle></CardHeader>
-                <CardContent className="text-center text-muted-foreground py-12">
-                    {(role === 'teacher' || role === 'admin') && <p>Evaluation entry form coming soon.</p>}
-                    {role === 'student' && <p>Final results will be displayed here after evaluation.</p>}
-                </CardContent>
-            </Card>
-        </TabsContent>
-
       </Tabs>
     </div>
   );
