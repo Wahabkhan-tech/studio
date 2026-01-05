@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -13,18 +14,39 @@ import { students } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 
 export default function ProfileCompletionPage() {
   const student = students[0];
   const avatar = PlaceHolderImages.find((p) => p.id === student.avatar);
+  const profileStatus = "PENDING_APPROVAL"; // This would be dynamic
+
+  const getStatusVariant = () => {
+    switch (profileStatus) {
+        case 'COMPLETE': return 'default';
+        case 'PENDING_APPROVAL': return 'secondary';
+        case 'INCOMPLETE':
+        default: return 'destructive';
+    }
+  }
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>My Profile</CardTitle>
-        <CardDescription>
-          Keep your information up-to-date to help supervisors and group members.
-        </CardDescription>
+        <div className='flex justify-between items-center'>
+            <div>
+                <CardTitle>My Profile</CardTitle>
+                <CardDescription>
+                Keep your information up-to-date to help supervisors and group members.
+                </CardDescription>
+            </div>
+            <div className='text-right'>
+                <Label className='text-xs text-muted-foreground'>Profile Status</Label>
+                <Badge variant={getStatusVariant()} className='mt-1'>
+                    {profileStatus.replace(/_/g, ' ')}
+                </Badge>
+            </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center gap-6">
@@ -47,6 +69,17 @@ export default function ProfileCompletionPage() {
             <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" defaultValue={student.email} disabled />
+            </div>
+        </div>
+        
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div className="space-y-2">
+                <Label htmlFor="contact">Contact Number</Label>
+                <Input id="contact" placeholder="Your phone number" />
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor="eb-number">EB Number</Label>
+                <Input id="eb-number" defaultValue="EB123456" disabled/>
             </div>
         </div>
 

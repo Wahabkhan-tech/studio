@@ -9,6 +9,7 @@ export type Student = {
   skills: string[];
   interests: string;
   groupPreferences?: string;
+  profileStatus?: "INCOMPLETE" | "PENDING_APPROVAL" | "COMPLETE";
 };
 
 export type Teacher = {

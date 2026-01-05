@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import {
   Book,
@@ -8,6 +9,8 @@ import {
   PlusCircle,
   User,
   Users,
+  ShieldQuestion,
+  Lock
 } from 'lucide-react';
 
 import {
@@ -18,12 +21,20 @@ import {
 } from '@/components/ui/tooltip';
 import { Header } from '@/components/header';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { groups } from '@/lib/data';
+import { cn } from '@/lib/utils';
+
 
 export default function StudentLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const myGroup = groups.find((g) => g.id === 'g2');
+  const isProfileComplete = myGroup?.proposal.status === 'APPROVED';
+
+  const lockedTooltip = "Complete your profile and get group proposal approved to unlock."
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -49,78 +60,94 @@ export default function StudentLayout({
                 </TooltipTrigger>
                 <TooltipContent side="right">Dashboard</TooltipContent>
               </Tooltip>
+
+              {!myGroup && (
+                <>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href="/student/groups/create"
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                      >
+                        <PlusCircle className="h-5 w-5" />
+                        <span className="sr-only">Create Group</span>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">Create Group</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href="/student/groups/join"
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                      >
+                        <Users className="h-5 w-5" />
+                        <span className="sr-only">Join Group</span>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">Join Group</TooltipContent>
+                  </Tooltip>
+                </>
+              )}
+
+              {myGroup && (
+                <>
+                   <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={`/student/groups/${myGroup.id}`}
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                      >
+                        <Package className="h-5 w-5" />
+                        <span className="sr-only">My Group</span>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">My Group</TooltipContent>
+                  </Tooltip>
+                   <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={`/student/groups/${myGroup.id}?tab=proposal`}
+                        className={cn(
+                          "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
+                          myGroup.proposal.status === 'APPROVED' && "text-green-500 hover:text-green-600"
+                        )}
+                      >
+                        <ShieldQuestion className="h-5 w-5" />
+                        <span className="sr-only">Proposal</span>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">Proposal</TooltipContent>
+                  </Tooltip>
+                </>
+              )}
+
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    href="/student/groups/g2"
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                    href={isProfileComplete ? "/student/tasks" : "#"}
+                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", isProfileComplete ? "hover:text-foreground" : "cursor-not-allowed opacity-50")}
                   >
-                    <Package className="h-5 w-5" />
-                    <span className="sr-only">My Group</span>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">My Group</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href="/student/groups/create"
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  >
-                    <PlusCircle className="h-5 w-5" />
-                    <span className="sr-only">Create Group</span>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">Create Group</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href="/student/groups/join"
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  >
-                    <Users className="h-5 w-5" />
-                    <span className="sr-only">Join Group</span>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">Join Group</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href="/student/groups/proposal"
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  >
-                    <Book className="h-5 w-5" />
-                    <span className="sr-only">Proposal</span>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">Proposal</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href="/student/tasks"
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  >
-                    <ClipboardList className="h-5 w-5" />
+                    {isProfileComplete ? <ClipboardList className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
                     <span className="sr-only">Tasks</span>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent side="right">Tasks</TooltipContent>
+                <TooltipContent side="right">{isProfileComplete ? "Tasks" : lockedTooltip}</TooltipContent>
               </Tooltip>
-              <Tooltip>
+
+               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    href="/student/chat"
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                    href={myGroup ? "/student/chat" : "#"}
+                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", myGroup ? "hover:text-foreground" : "cursor-not-allowed opacity-50")}
                   >
-                    <MessageSquare className="h-5 w-5" />
+                    {myGroup ? <MessageSquare className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
                     <span className="sr-only">Chat</span>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent side="right">Chat</TooltipContent>
+                <TooltipContent side="right">{myGroup ? "Chat" : "Join a group to enable chat"}</TooltipContent>
               </Tooltip>
+
             </TooltipProvider>
           </nav>
           <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
