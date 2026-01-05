@@ -1,3 +1,4 @@
+
 export type Student = {
   id: string;
   name: string;
@@ -18,6 +19,12 @@ export type Teacher = {
   department: string;
   designation: string;
 };
+
+export type Department = {
+    id: string;
+    name: string;
+    head: string;
+}
 
 export type Group = {
   id: string;

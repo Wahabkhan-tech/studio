@@ -1,4 +1,10 @@
-import type { Student, Teacher, Group, Task } from './types';
+import type { Student, Teacher, Group, Task, Department } from './types';
+
+export const departments: Department[] = [
+    { id: 'd1', name: 'Computer Science', head: 'Dr. Alan Grant' },
+    { id: 'd2', name: 'Software Engineering', head: 'Dr. Ellie Sattler' },
+    { id: 'd3', name: 'Information Technology', head: 'N/A' },
+];
 
 export const students: Student[] = [
   {

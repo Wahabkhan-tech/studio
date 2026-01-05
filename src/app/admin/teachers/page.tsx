@@ -1,4 +1,5 @@
 
+'use client';
 import { MoreHorizontal, PlusCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,10 +26,23 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { teachers } from '@/lib/data';
+import { teachers, departments } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 
 export default function TeacherManagementPage() {
   return (
@@ -41,12 +55,54 @@ export default function TeacherManagementPage() {
               Manage all teacher accounts in the system.
             </CardDescription>
           </div>
-          <Button size="sm" className="gap-1">
-            <PlusCircle className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Add Teacher
-            </span>
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button size="sm" className="gap-1">
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Add Teacher
+                </span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add New Teacher</DialogTitle>
+                <DialogDescription>
+                  Enter the details for the new teacher and assign them to a department.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input id="name" placeholder="e.g., Dr. Ian Malcolm" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input id="email" type="email" placeholder="e.g., ian.malcolm@example.com" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="designation">Designation</Label>
+                  <Input id="designation" placeholder="e.g., Professor" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="department">Department</Label>
+                  <Select>
+                    <SelectTrigger id="department">
+                      <SelectValue placeholder="Select a department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {departments.map(dept => (
+                        <SelectItem key={dept.id} value={dept.id}>{dept.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit">Add Teacher</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </CardHeader>
       <CardContent>
@@ -69,6 +125,7 @@ export default function TeacherManagementPage() {
           <TableBody>
             {teachers.map((teacher) => {
               const avatar = PlaceHolderImages.find((img) => img.id === teacher.avatar);
+              const department = departments.find(d => d.name === teacher.department);
               return (
               <TableRow key={teacher.id}>
                 <TableCell className="hidden sm:table-cell">
@@ -90,7 +147,9 @@ export default function TeacherManagementPage() {
                   <div className="text-sm text-muted-foreground md:hidden">{teacher.email}</div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">{teacher.department}</Badge>
+                  <Link href={`/admin/departments/${department?.id}/teachers`}>
+                    <Badge variant="outline">{teacher.department}</Badge>
+                  </Link>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   {teacher.designation}
