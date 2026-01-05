@@ -14,12 +14,16 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { Check, FileText, Send, UserCheck, UserX, X } from 'lucide-react';
+import { Check, FileText, Send, UserCheck, UserX, X, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
-import { tasks as allTasks } from '@/lib/data';
+import { tasks as allTasks, students } from '@/lib/data';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Switch } from './ui/switch';
 import { useSearchParams } from 'next/navigation';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface GroupDetailsPageProps {
   role: UserRole;
@@ -37,6 +41,7 @@ export function GroupDetailsPage({
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'overview';
   const groupTasks = allTasks.slice(0, 3); // Demo tasks
+  const loggedInStudent = students[0];
 
   return (
     <div className="space-y-6">
@@ -171,9 +176,52 @@ export function GroupDetailsPage({
         
         <TabsContent value="tasks">
             <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Task Management</CardTitle>
-                    {role === 'student' && group.leaderId === 's1' && <Button>Add New Task</Button>}
+                    {(role === 'teacher' || (role === 'student' && group.leaderId === loggedInStudent.id)) && (
+                       <Dialog>
+                            <DialogTrigger asChild>
+                                <Button size="sm" className="gap-1">
+                                    <PlusCircle className="h-3.5 w-3.5" />
+                                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                                        Add New Task
+                                    </span>
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Create New Task</DialogTitle>
+                                    <DialogDescription>
+                                        Assign a new task to a group member.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="task-title">Task Title</Label>
+                                        <Input id="task-title" placeholder="e.g., Implement user authentication" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="task-student">Assign To</Label>
+                                        <Select>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a student" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {members.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="task-due-date">Due Date</Label>
+                                        <Input id="task-due-date" type="date" />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button type="submit">Add Task</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    )}
                 </CardHeader>
                 <CardContent>
                     <Table>
@@ -182,7 +230,7 @@ export function GroupDetailsPage({
                                 <TableHead>Task</TableHead>
                                 <TableHead>Assigned To</TableHead>
                                 <TableHead>Status</TableHead>
-                                {role === 'student' && <TableHead className="text-right">Action</TableHead>}
+                                {role !== 'admin' && <TableHead className="text-right">Action</TableHead>}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -195,7 +243,12 @@ export function GroupDetailsPage({
                                     <TableCell><Badge variant="secondary">{task.status}</Badge></TableCell>
                                     {role === 'student' && (
                                         <TableCell className="text-right">
-                                            {task.assignedTo === 's1' && task.status !== 'Done' && <Button size="sm">Submit</Button>}
+                                            {task.assignedTo === loggedInStudent.id && task.status !== 'Done' && <Button size="sm">Submit</Button>}
+                                        </TableCell>
+                                    )}
+                                     {role === 'teacher' && (
+                                        <TableCell className="text-right">
+                                            <Button size="sm" variant="outline">View</Button>
                                         </TableCell>
                                     )}
                                 </TableRow>
@@ -212,16 +265,16 @@ export function GroupDetailsPage({
                 <CardContent>
                     {(role === 'teacher' || role === 'admin') && (
                         <Table>
-                           <TableHeader><TableRow><TableHead>Student</TableHead><TableHead className="text-right">Mark Attendance</TableHead></TableRow></TableHeader>
+                           <TableHeader><TableRow><TableHead>Student</TableHead><TableHead className="text-right">Mark Attendance (for today)</TableHead></TableRow></TableHeader>
                             <TableBody>
                                 {members.map(member => (
                                     <TableRow key={member.id}>
                                         <TableCell>{member.name}</TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                                <UserX className="text-muted-foreground" size={16} />
+                                                <span className='text-sm text-muted-foreground'>Absent</span>
                                                 <Switch defaultChecked disabled={role === 'admin'} />
-                                                <UserCheck className="text-primary" size={16} />
+                                                <span className='text-sm font-medium'>Present</span>
                                             </div>
                                         </TableCell>
                                     </TableRow>

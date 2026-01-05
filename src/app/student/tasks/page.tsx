@@ -1,3 +1,4 @@
+'use client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,9 +17,17 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { tasks, students } from '@/lib/data';
+import { useState } from 'react';
 
 export default function StudentTasksPage() {
-  const myTasks = tasks.filter(t => t.assignedTo === 's1' || t.assignedTo === 's5');
+  const [myTasks, setMyTasks] = useState(tasks.filter(t => t.assignedTo === 's1' || t.assignedTo === 's5'));
+
+  const handleStatusChange = (taskId: string, newStatus: 'In Progress' | 'Done') => {
+    setMyTasks(currentTasks => currentTasks.map(task => 
+      task.id === taskId ? { ...task, status: newStatus } : task
+    ));
+  };
+  
   return (
     <Card>
       <CardHeader>
@@ -57,8 +66,14 @@ export default function StudentTasksPage() {
                 </TableCell>
                 <TableCell className="text-right">
                   {isMyTask && task.status !== 'Done' && (
-                    <Button size="sm">
-                      {task.status === 'To Do' ? 'Start' : 'Submit'}
+                    <Button 
+                      size="sm"
+                      onClick={() => handleStatusChange(
+                        task.id,
+                        task.status === 'To Do' ? 'In Progress' : 'Done'
+                      )}
+                    >
+                      {task.status === 'To Do' ? 'Start Task' : 'Submit for Review'}
                     </Button>
                   )}
                 </TableCell>

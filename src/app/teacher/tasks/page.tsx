@@ -1,3 +1,4 @@
+'use client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,6 +18,10 @@ import {
 } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { tasks, students, groups } from '@/lib/data';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { PlusCircle } from 'lucide-react';
 
 export default function TeacherTasksPage() {
     const teacherGroups = groups.filter(g => g.supervisorId === 't1');
@@ -26,15 +31,70 @@ export default function TeacherTasksPage() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Tasks Review</CardTitle>
-        <CardDescription>
-          Review task progress for your supervised groups.
-        </CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+            <CardTitle>Tasks Review</CardTitle>
+            <CardDescription>
+            Review task progress and create new tasks for your supervised groups.
+            </CardDescription>
+        </div>
+         <Dialog>
+            <DialogTrigger asChild>
+                <Button size="sm" className="gap-1">
+                    <PlusCircle className="h-3.5 w-3.5" />
+                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                        Create Task
+                    </span>
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Create New Task</DialogTitle>
+                    <DialogDescription>
+                        Assign a new task to a student in one of your groups.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="task-title">Task Title</Label>
+                        <Input id="task-title" placeholder="e.g., Implement login page UI" />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="task-group">Group</Label>
+                        <Select>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a group" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {teacherGroups.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="task-student">Assign To</Label>
+                        <Select>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a student" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {students.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="task-due-date">Due Date</Label>
+                        <Input id="task-due-date" type="date" />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button type="submit">Create Task</Button>
+                </DialogFooter>
+            </DialogContent>
+         </Dialog>
       </CardHeader>
       <CardContent>
         <div className="mb-4">
-            <Select defaultValue={teacherGroups[0].id}>
+            <Select defaultValue="all">
                 <SelectTrigger className='w-full md:w-1/3'>
                     <SelectValue placeholder="Filter by group" />
                 </SelectTrigger>
