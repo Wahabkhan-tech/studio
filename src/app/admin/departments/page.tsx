@@ -18,15 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { departments } from '@/lib/data';
 import { PlusCircle } from 'lucide-react';
 import Link from 'next/link';
-
-// Mock data for departments - in a real app, this would come from a database
-const departments = [
-    { id: 'd1', name: 'Computer Science', head: 'Dr. Alan Grant' },
-    { id: 'd2', name: 'Software Engineering', head: 'Dr. Ellie Sattler' },
-    { id: 'd3', name: 'Information Technology', head: 'N/A' },
-];
 
 export default function DepartmentManagementPage() {
   return (

@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { teachers, departments } from '@/lib/data';
+import { teachers } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
@@ -42,6 +42,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { departments } from '@/lib/data';
 
 
 export default function TeacherManagementPage() {
@@ -147,9 +148,13 @@ export default function TeacherManagementPage() {
                   <div className="text-sm text-muted-foreground md:hidden">{teacher.email}</div>
                 </TableCell>
                 <TableCell>
-                  <Link href={`/admin/departments/${department?.id}/teachers`}>
+                  {department ? (
+                    <Link href={`/admin/departments/${department.id}/teachers`}>
+                      <Badge variant="outline">{teacher.department}</Badge>
+                    </Link>
+                  ) : (
                     <Badge variant="outline">{teacher.department}</Badge>
-                  </Link>
+                  )}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   {teacher.designation}

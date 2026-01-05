@@ -14,14 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { teachers, groups as allGroups } from '@/lib/data';
+import { departments, teachers, groups as allGroups } from '@/lib/data';
 import Link from 'next/link';
-
-const departments = [
-    { id: 'd1', name: 'Computer Science' },
-    { id: 'd2', name: 'Software Engineering' },
-    { id: 'd3', name: 'Information Technology' },
-];
 
 export default function TeachersByDepartmentPage({ params }: { params: { departmentId: string } }) {
   const department = departments.find(d => d.id === params.departmentId);
