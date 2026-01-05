@@ -7,14 +7,14 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { Group, Student, Teacher, UserRole, Task } from '@/lib/types';
+import type { Group, Student, Teacher, UserRole } from '@/lib/types';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { Check, FileText, Send, UserCheck, UserX, X, PlusCircle } from 'lucide-react';
+import { Check, FileText, Send, PlusCircle, X } from 'lucide-react';
 import Link from 'next/link';
 import { tasks as allTasks, students } from '@/lib/data';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
@@ -240,7 +240,7 @@ export function GroupDetailsPage({
                                 <TableRow key={task.id}>
                                     <TableCell className="font-medium">{task.title}</TableCell>
                                     <TableCell>{assignee?.name}</TableCell>
-                                    <TableCell><Badge variant="secondary">{task.status}</Badge></TableCell>
+                                    <TableCell><Badge variant={task.status === 'Done' ? 'default' : task.status === 'In Progress' ? 'secondary' : 'outline'}>{task.status}</Badge></TableCell>
                                     {role === 'student' && (
                                         <TableCell className="text-right">
                                             {task.assignedTo === loggedInStudent.id && task.status !== 'Done' && <Button size="sm">Submit</Button>}

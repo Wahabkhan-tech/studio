@@ -1,11 +1,28 @@
+
+'use client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import { students, teachers } from "@/lib/data";
+import { useRouter } from "next/navigation";
 
 export default function CreateGroupPage() {
+    const { toast } = useToast();
+    const router = useRouter();
+
+    const handleCreateGroup = () => {
+        // In a real application, this would involve a server call.
+        // For now, we'll just show a success message and redirect.
+        toast({
+            title: "Group Created!",
+            description: "Your new group has been successfully created.",
+        });
+        router.push('/student/dashboard');
+    }
+
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
@@ -59,7 +76,7 @@ export default function CreateGroupPage() {
         </div>
         
         <div className="flex justify-end pt-4">
-            <Button>Create Group</Button>
+            <Button onClick={handleCreateGroup}>Create Group</Button>
         </div>
       </CardContent>
     </Card>
