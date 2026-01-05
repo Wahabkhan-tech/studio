@@ -1,5 +1,6 @@
 
 'use client';
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,24 +10,47 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
 import { Search, Send } from 'lucide-react';
 
+const initialMessages = [
+  {
+    id: 'm1',
+    sender: 'You',
+    text: 'Hello Dr. Grant, could you please review the new project guidelines?',
+    timestamp: '10:00 AM',
+  },
+  {
+    id: 'm2',
+    sender: 'Dr. Alan Grant',
+    text: 'Of course. I will take a look this afternoon.',
+    timestamp: '10:02 AM',
+  },
+];
+
 export default function AdminChatPage() {
-  // Demo data
+  const [messages, setMessages] = useState(initialMessages);
+  const [newMessage, setNewMessage] = useState('');
+
   const selectedTeacher = teachers[0];
   const avatar = PlaceHolderImages.find((p) => p.id === selectedTeacher.avatar);
-  const messages = [
-    {
-      id: 'm1',
+
+  const handleSendMessage = () => {
+    if (newMessage.trim() === '') return;
+
+    const message = {
+      id: `m${messages.length + 1}`,
       sender: 'You',
-      text: 'Hello Dr. Grant, could you please review the new project guidelines?',
-      timestamp: '10:00 AM',
-    },
-    {
-      id: 'm2',
-      sender: selectedTeacher.name,
-      text: 'Of course. I will take a look this afternoon.',
-      timestamp: '10:02 AM',
-    },
-  ];
+      text: newMessage,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages([...messages, message]);
+    setNewMessage('');
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
 
   return (
     <div className="grid h-[calc(100vh-8rem)] grid-cols-4">
@@ -120,11 +144,18 @@ export default function AdminChatPage() {
         </ScrollArea>
         <div className="border-t p-4">
           <div className="relative">
-            <Input placeholder="Type your message..." className="pr-12" />
+            <Input 
+              placeholder="Type your message..." 
+              className="pr-12" 
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={handleKeyPress}
+            />
             <Button
               size="icon"
               variant="ghost"
               className="absolute right-1 top-1/2 -translate-y-1/2"
+              onClick={handleSendMessage}
             >
               <Send className="h-5 w-5 text-primary" />
             </Button>

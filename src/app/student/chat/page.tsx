@@ -1,5 +1,6 @@
 
 'use client';
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +10,16 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
 import { Send, Users, UserCog } from 'lucide-react';
 
+const initialMessages = [
+  { id: 'm1', senderId: 's5', text: "Hey, I've pushed the initial schema design. Can you take a look?", timestamp: "09:30 AM" },
+  { id: 'm2', senderId: 's1', text: "Sure, checking it out now. Looks like a good start!", timestamp: "09:32 AM" },
+  { id: 'm3', senderId: 's5', text: "Great. Let me know if any changes are needed for the auth part.", timestamp: "09:33 AM" },
+];
+
 export default function StudentChatPage() {
+  const [messages, setMessages] = useState(initialMessages);
+  const [newMessage, setNewMessage] = useState('');
+  
   const myGroup = groups.find((g) => g.id === 'g2');
   const supervisor = teachers.find(t => t.id === myGroup?.supervisorId);
   const groupMembers = students.filter(s => myGroup?.memberIds.includes(s.id));
@@ -21,11 +31,25 @@ export default function StudentChatPage() {
   ];
   const selectedConversationId = 'conv-group';
 
-  const messages = [
-    { id: 'm1', senderId: 's5', text: "Hey, I've pushed the initial schema design. Can you take a look?", timestamp: "09:30 AM" },
-    { id: 'm2', senderId: 's1', text: "Sure, checking it out now. Looks like a good start!", timestamp: "09:32 AM" },
-    { id: 'm3', senderId: 's5', text: "Great. Let me know if any changes are needed for the auth part.", timestamp: "09:33 AM" },
-  ];
+  const handleSendMessage = () => {
+    if (newMessage.trim() === '') return;
+
+    const message = {
+      id: `m${messages.length + 1}`,
+      senderId: loggedInStudent.id,
+      text: newMessage,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages([...messages, message]);
+    setNewMessage('');
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
 
   return (
     <div className="grid h-[calc(100vh-8rem)] grid-cols-4">
@@ -96,11 +120,18 @@ export default function StudentChatPage() {
         </ScrollArea>
         <div className="border-t p-4">
           <div className="relative">
-            <Input placeholder="Type your message..." className="pr-12" />
+            <Input 
+              placeholder="Type your message..." 
+              className="pr-12"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={handleKeyPress}
+            />
             <Button
               size="icon"
               variant="ghost"
               className="absolute right-1 top-1/2 -translate-y-1/2"
+              onClick={handleSendMessage}
             >
               <Send className="h-5 w-5 text-primary" />
             </Button>

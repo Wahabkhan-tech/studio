@@ -1,5 +1,6 @@
 
 'use client';
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +10,16 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
 import { Search, Send, Users, Shield } from 'lucide-react';
 
+const initialMessages = [
+  { id: 'm1', senderId: 's2', text: "Dr. Grant, we've completed the data collection phase. Ready to move on to model training.", timestamp: "11:00 AM" },
+  { id: 'm2', senderId: 't1', text: "Excellent work. Please prepare a summary of the dataset and your proposed model architecture.", timestamp: "11:05 AM" },
+  { id: 'm3', senderId: 's4', text: "I've updated the UI mockups based on our last discussion.", timestamp: "11:10 AM" },
+];
+
 export default function TeacherChatPage() {
+  const [messages, setMessages] = useState(initialMessages);
+  const [newMessage, setNewMessage] = useState('');
+  
   const myGroups = groups.filter((g) => g.supervisorId === 't1');
   const loggedInTeacher = teachers[0];
 
@@ -22,11 +32,25 @@ export default function TeacherChatPage() {
   const selectedGroup = myGroups.find(g => g.id === selectedConversationId);
   const groupMembers = students.filter(s => selectedGroup?.memberIds.includes(s.id));
 
-  const messages = [
-     { id: 'm1', senderId: 's2', text: "Dr. Grant, we've completed the data collection phase. Ready to move on to model training.", timestamp: "11:00 AM" },
-     { id: 'm2', senderId: 't1', text: "Excellent work. Please prepare a summary of the dataset and your proposed model architecture.", timestamp: "11:05 AM" },
-     { id: 'm3', senderId: 's4', text: "I've updated the UI mockups based on our last discussion.", timestamp: "11:10 AM" },
-  ];
+  const handleSendMessage = () => {
+    if (newMessage.trim() === '') return;
+
+    const message = {
+      id: `m${messages.length + 1}`,
+      senderId: loggedInTeacher.id,
+      text: newMessage,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages([...messages, message]);
+    setNewMessage('');
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
 
   return (
     <div className="grid h-[calc(100vh-8rem)] grid-cols-4">
@@ -101,11 +125,18 @@ export default function TeacherChatPage() {
         </ScrollArea>
         <div className="border-t p-4">
           <div className="relative">
-            <Input placeholder="Type your message..." className="pr-12" />
+            <Input 
+              placeholder="Type your message..." 
+              className="pr-12"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={handleKeyPress}
+            />
             <Button
               size="icon"
               variant="ghost"
               className="absolute right-1 top-1/2 -translate-y-1/2"
+              onClick={handleSendMessage}
             >
               <Send className="h-5 w-5 text-primary" />
             </Button>
