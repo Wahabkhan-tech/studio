@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Card,
@@ -50,6 +51,7 @@ import {
 } from './ui/select';
 import { Slider } from './ui/slider';
 import { cn } from '@/lib/utils';
+import { ScrollArea, ScrollBar } from './ui/scroll-area';
 
 interface GroupDetailsPageProps {
   role: UserRole;
@@ -98,14 +100,17 @@ export function GroupDetailsPage({
       </Card>
 
       <Tabs defaultValue={defaultTab}>
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="members">Members</TabsTrigger>
-          <TabsTrigger value="proposal">Proposal</TabsTrigger>
-          <TabsTrigger value="tasks">Tasks</TabsTrigger>
-          <TabsTrigger value="evaluation">Evaluation</TabsTrigger>
-          <TabsTrigger value="attendance">Attendance</TabsTrigger>
-        </TabsList>
+        <ScrollArea className="w-full whitespace-nowrap">
+          <TabsList className="w-full justify-start">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="members">Members</TabsTrigger>
+            <TabsTrigger value="proposal">Proposal</TabsTrigger>
+            <TabsTrigger value="tasks">Tasks</TabsTrigger>
+            <TabsTrigger value="evaluation">Evaluation</TabsTrigger>
+            <TabsTrigger value="attendance">Attendance</TabsTrigger>
+          </TabsList>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
 
         <TabsContent value="overview">
           <Card>
@@ -373,42 +378,61 @@ export function GroupDetailsPage({
         </TabsContent>
 
         <TabsContent value="evaluation">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Weekly Evaluation</CardTitle>
-                    <CardDescription>
-                        {role === 'teacher' 
-                            ? "Provide weekly feedback and update the project's progress."
-                            : "View the latest feedback from your supervisor."
-                        }
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {role === 'teacher' ? (
-                        <>
-                            <div className="space-y-2">
-                                <Label htmlFor="feedback-comment">This Week's Comments</Label>
-                                <Textarea id="feedback-comment" placeholder="Enter your feedback on the group's progress this week..." rows={5}/>
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="progress-slider">Set Project Progress ({group.progress}%)</Label>
-                                <Slider id="progress-slider" defaultValue={[group.progress]} max={100} step={5} />
-                            </div>
-                            <div className="flex justify-end">
-                                <Button>Submit Evaluation</Button>
-                            </div>
-                        </>
-                    ) : (
-                         <div>
-                            <h4 className="font-semibold text-lg">Latest Feedback</h4>
-                            <p className="text-sm text-muted-foreground mb-4">From {supervisor?.name} on July 24, 2024</p>
-                            <div className="p-4 bg-muted/50 rounded-lg border">
-                                <p>Great progress on the initial model training. The accuracy is promising. For next week, please focus on preparing the dataset for the next phase and document the model architecture clearly.</p>
-                            </div>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Weekly Evaluation</CardTitle>
+              <CardDescription>
+                {role === 'teacher'
+                  ? "Provide weekly feedback and update the project's progress."
+                  : 'View the latest feedback from your supervisor.'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {role === 'teacher' ? (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="feedback-comment">
+                      This Week's Comments
+                    </Label>
+                    <Textarea
+                      id="feedback-comment"
+                      placeholder="Enter your feedback on the group's progress this week..."
+                      rows={5}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="progress-slider">
+                      Set Project Progress ({group.progress}%)
+                    </Label>
+                    <Slider
+                      id="progress-slider"
+                      defaultValue={[group.progress]}
+                      max={100}
+                      step={5}
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <Button>Submit Evaluation</Button>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <h4 className="font-semibold text-lg">Latest Feedback</h4>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    From {supervisor?.name} on July 24, 2024
+                  </p>
+                  <div className="p-4 bg-muted/50 rounded-lg border">
+                    <p>
+                      Great progress on the initial model training. The
+                      accuracy is promising. For next week, please focus on
+                      preparing the dataset for the next phase and document the
+                      model architecture clearly.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="attendance">
@@ -421,49 +445,52 @@ export function GroupDetailsPage({
             </CardHeader>
             <CardContent>
               {groupSessions.length > 0 ? (
-              <div className="border rounded-lg overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="font-semibold">Student</TableHead>
-                      {groupSessions.map((session) => (
-                        <TableHead key={session.id} className="text-center">
-                          {new Date(session.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {members.map((member) => (
-                      <TableRow key={member.id}>
-                        <TableCell className="font-medium">{member.name}</TableCell>
-                        {groupSessions.map((session) => {
-                          const isPresent = session.attendees.includes(member.id);
-                          return (
-                            <TableCell key={session.id} className="text-center">
-                              {role === 'teacher' ? (
-                                <div className='flex justify-center gap-1'>
-                                  <Button size="icon" variant={isPresent ? 'default' : 'outline'} className='h-7 w-7 rounded-full'>P</Button>
-                                  <Button size="icon" variant={!isPresent ? 'destructive' : 'outline'} className='h-7 w-7 rounded-full'>A</Button>
-                                </div>
-                              ) : (
-                                <Badge variant={isPresent ? 'default' : 'destructive'}>
-                                  {isPresent ? 'P' : 'A'}
-                                </Badge>
-                              )}
-                            </TableCell>
-                          )
-                        })}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-               ) : (
-                 <div className="text-center py-8 text-muted-foreground">
-                    No sessions have been scheduled for this group yet.
-                 </div>
-               )}
+                <ScrollArea className="w-full whitespace-nowrap rounded-md border">
+                  <div className="relative w-full overflow-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="font-semibold w-[150px] sticky left-0 bg-background">Student</TableHead>
+                          {groupSessions.map((session) => (
+                            <TableHead key={session.id} className="text-center">
+                              {new Date(session.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </TableHead>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {members.map((member) => (
+                          <TableRow key={member.id}>
+                            <TableCell className="font-medium sticky left-0 bg-background/95 backdrop-blur-sm">{member.name}</TableCell>
+                            {groupSessions.map((session) => {
+                              const isPresent = session.attendees.includes(member.id);
+                              return (
+                                <TableCell key={session.id} className="text-center">
+                                  {role === 'teacher' ? (
+                                    <div className="flex justify-center gap-1">
+                                      <Button size="icon" variant={isPresent ? 'default' : 'outline'} className='h-7 w-7 rounded-full'>P</Button>
+                                      <Button size="icon" variant={!isPresent ? 'destructive' : 'outline'} className='h-7 w-7 rounded-full'>A</Button>
+                                    </div>
+                                  ) : (
+                                    <Badge variant={isPresent ? 'default' : 'destructive'}>
+                                      {isPresent ? 'P' : 'A'}
+                                    </Badge>
+                                  )}
+                                </TableCell>
+                              )
+                            })}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                   <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  No sessions have been scheduled for this group yet.
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -471,3 +498,4 @@ export function GroupDetailsPage({
     </div>
   );
 }
+
