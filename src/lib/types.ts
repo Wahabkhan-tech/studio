@@ -57,3 +57,11 @@ export type Task = {
   status: 'To Do' | 'In Progress' | 'Done';
   dueDate: string;
 };
+
+export type Session = {
+    id: string;
+    title: string;
+    groupId: string;
+    date: string;
+    attendees: string[];
+}

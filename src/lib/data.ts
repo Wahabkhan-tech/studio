@@ -1,4 +1,4 @@
-import type { Student, Teacher, Group, Task, Department } from './types';
+import type { Student, Teacher, Group, Task, Department, Session } from './types';
 
 export const departments: Department[] = [
     { id: 'd1', name: 'Computer Science', head: 'Dr. Alan Grant' },
@@ -102,6 +102,7 @@ export const groups: Group[] = [
       description: 'A project to build a system that detects human emotions in real-time using webcam feeds and deep learning models.',
       techStack: ['Python', 'TensorFlow', 'OpenCV'],
       status: 'APPROVED',
+      feedback: "Great progress on the initial model training. The accuracy is promising. For next week, please focus on preparing the dataset for the next phase and document the model architecture clearly."
     },
     progress: 75,
     description: 'Developing a cutting-edge emotion detection system using AI.',
@@ -152,3 +153,10 @@ export const tasks: Task[] = [
   { id: 'task-4', title: 'Create UI mockups for dashboard', assignedTo: 's4', status: 'Done', dueDate: '2024-06-05' },
   { id: 'task-5', title: 'Train initial ML model', assignedTo: 's2', status: 'In Progress', dueDate: '2024-06-18' },
 ];
+
+export const sessions: Session[] = [
+    { id: 'ses1', title: 'Weekly Sync', groupId: 'g1', date: '2024-07-25', attendees: ['s2', 's4'] },
+    { id: 'ses2', title: 'Proposal Discussion', groupId: 'g2', date: '2024-07-26', attendees: ['s1'] },
+    { id: 'ses3', title: 'Initial Kick-off', groupId: 'g1', date: '2024-07-18', attendees: ['s2', 's4'] },
+    { id: 'ses4', title: 'Mid-Project Review', groupId: 'g1', date: '2024-08-01', attendees: ['s4'] },
+]

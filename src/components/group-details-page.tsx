@@ -14,9 +14,9 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { Check, FileText, Send, PlusCircle, X } from 'lucide-react';
+import { Check, FileText, Send, PlusCircle, X, Pencil } from 'lucide-react';
 import Link from 'next/link';
-import { tasks as allTasks, students } from '@/lib/data';
+import { tasks as allTasks, students, sessions } from '@/lib/data';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Switch } from './ui/switch';
 import { useSearchParams } from 'next/navigation';
@@ -24,6 +24,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Slider } from './ui/slider';
 
 interface GroupDetailsPageProps {
   role: UserRole;
@@ -42,13 +43,7 @@ export function GroupDetailsPage({
   const defaultTab = searchParams.get('tab') || 'overview';
   const groupTasks = allTasks.slice(0, 3); // Demo tasks
   const loggedInStudent = students[0];
-
-  const studentAttendance = [
-      { date: '2024-07-22', status: 'Present' },
-      { date: '2024-07-15', status: 'Present' },
-      { date: '2024-07-08', status: 'Absent' },
-      { date: '2024-07-01', status: 'Present' },
-  ]
+  const groupSessions = sessions.filter(s => s.groupId === group.id);
 
   return (
     <div className="space-y-6">
@@ -78,11 +73,12 @@ export function GroupDetailsPage({
       </Card>
 
       <Tabs defaultValue={defaultTab}>
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="members">Members</TabsTrigger>
           <TabsTrigger value="proposal">Proposal</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
+          <TabsTrigger value="evaluation">Evaluation</TabsTrigger>
           <TabsTrigger value="attendance">Attendance</TabsTrigger>
         </TabsList>
 
@@ -263,54 +259,115 @@ export function GroupDetailsPage({
                 </CardContent>
             </Card>
         </TabsContent>
+        
+        <TabsContent value="evaluation">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Weekly Evaluation</CardTitle>
+                    <CardDescription>
+                        {role === 'teacher' 
+                            ? "Provide weekly feedback and update the project's progress."
+                            : "View the latest feedback from your supervisor."
+                        }
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    {role === 'teacher' ? (
+                        <>
+                            <div className="space-y-2">
+                                <Label htmlFor="feedback-comment">This Week's Comments</Label>
+                                <Textarea id="feedback-comment" placeholder="Enter your feedback on the group's progress this week..." rows={5}/>
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="progress-slider">Set Project Progress ({group.progress}%)</Label>
+                                <Slider id="progress-slider" defaultValue={[group.progress]} max={100} step={5} />
+                            </div>
+                            <div className="flex justify-end">
+                                <Button>Submit Evaluation</Button>
+                            </div>
+                        </>
+                    ) : (
+                         <div>
+                            <h4 className="font-semibold text-lg">Latest Feedback</h4>
+                            <p className="text-sm text-muted-foreground mb-4">From {supervisor?.name} on July 24, 2024</p>
+                            <div className="p-4 bg-muted/50 rounded-lg border">
+                                <p>Great progress on the initial model training. The accuracy is promising. For next week, please focus on preparing the dataset for the next phase and document the model architecture clearly.</p>
+                            </div>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        </TabsContent>
 
         <TabsContent value="attendance">
             <Card>
                 <CardHeader>
-                    <CardTitle>Attendance</CardTitle>
-                    {(role === 'teacher' || role === 'admin') && <CardDescription>Mark attendance for each student for today's session.</CardDescription>}
-                    {role === 'student' && <CardDescription>Your attendance record for this project.</CardDescription>}
+                    <CardTitle>Attendance Record</CardTitle>
+                    <CardDescription>
+                        {role === 'student'
+                            ? "Your attendance record for scheduled sessions."
+                            : `Attendance record for ${group.name}.`
+                        }
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {(role === 'teacher' || role === 'admin') && (
-                        <Table>
-                           <TableHeader><TableRow><TableHead>Student</TableHead><TableHead className="text-right">Mark Attendance (for today)</TableHead></TableRow></TableHeader>
-                            <TableBody>
-                                {members.map(member => (
-                                    <TableRow key={member.id}>
-                                        <TableCell>{member.name}</TableCell>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Session Date</TableHead>
+                                <TableHead>Session Title</TableHead>
+                                {role === 'student' ? (
+                                    <TableHead className="text-right">Your Status</TableHead>
+                                ) : (
+                                    <>
+                                        <TableHead>Student</TableHead>
+                                        <TableHead className="text-right">Status</TableHead>
+                                    </>
+                                )}
+                                {role === 'teacher' && <TableHead className="text-right">Actions</TableHead>}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {groupSessions.flatMap(session => 
+                                role === 'student' ? (
+                                    <TableRow key={`${session.id}-${loggedInStudent.id}`}>
+                                        <TableCell>{new Date(session.date).toLocaleDateString()}</TableCell>
+                                        <TableCell>{session.title}</TableCell>
                                         <TableCell className="text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <span className='text-sm text-muted-foreground'>Absent</span>
-                                                <Switch defaultChecked disabled={role === 'admin'} />
-                                                <span className='text-sm font-medium'>Present</span>
-                                            </div>
+                                            <Badge variant={session.attendees.includes(loggedInStudent.id) ? 'default' : 'destructive'}>
+                                                {session.attendees.includes(loggedInStudent.id) ? 'Present' : 'Absent'}
+                                            </Badge>
                                         </TableCell>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )}
-                     {role === 'student' && (
-                        <Table>
-                            <TableHeader>
+                                ) : (
+                                    members.map(member => (
+                                        <TableRow key={`${session.id}-${member.id}`}>
+                                            <TableCell>{new Date(session.date).toLocaleDateString()}</TableCell>
+                                            <TableCell>{session.title}</TableCell>
+                                            <TableCell>{member.name}</TableCell>
+                                            <TableCell className="text-right">
+                                                <Badge variant={session.attendees.includes(member.id) ? 'default' : 'destructive'}>
+                                                    {session.attendees.includes(member.id) ? 'Present' : 'Absent'}
+                                                </Badge>
+                                            </TableCell>
+                                             {role === 'teacher' && (
+                                                <TableCell className="text-right">
+                                                    <Button variant="ghost" size="icon">
+                                                        <Pencil className="h-4 w-4" />
+                                                    </Button>
+                                                </TableCell>
+                                            )}
+                                        </TableRow>
+                                    ))
+                                )
+                            )}
+                            {groupSessions.length === 0 && (
                                 <TableRow>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead className="text-right">Status</TableHead>
+                                    <TableCell colSpan={role === 'student' ? 3 : 5} className="text-center">No sessions scheduled for this group yet.</TableCell>
                                 </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {studentAttendance.map((record) => (
-                                    <TableRow key={record.date}>
-                                        <TableCell>{record.date}</TableCell>
-                                        <TableCell className="text-right">
-                                            <Badge variant={record.status === 'Present' ? 'default' : 'destructive'}>{record.status}</Badge>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )}
+                            )}
+                        </TableBody>
+                    </Table>
                 </CardContent>
             </Card>
         </TabsContent>
