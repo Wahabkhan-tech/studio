@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Lightbulb } from "lucide-react";
-import GroupSuggestionForm from "./_components/group-suggestion-form";
+import GroupSuggestionForm from "../_components/group-suggestion-form";
 
 export default function JoinGroupPage() {
   return (
