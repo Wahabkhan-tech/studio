@@ -1,3 +1,4 @@
+
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,7 +14,9 @@ import { ArrowRight, BadgeInfo, Book, Package } from 'lucide-react';
 import Link from 'next/link';
 
 export default function StudentDashboard() {
-  // Assuming the logged in student is part of group g2
+  // Assuming the logged in student is part of group g2 for demonstration.
+  // In a real app, this would be based on the logged-in user's data.
+  // We will toggle this to show both states of the dashboard.
   const myGroup = groups.find((g) => g.id === 'g2');
 
   return (
