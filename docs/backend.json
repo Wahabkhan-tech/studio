@@ -1,0 +1,671 @@
+{
+  "entities": {
+    "Admin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Admin",
+      "type": "object",
+      "description": "Represents an administrator user in the system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the admin user."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the admin user.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "email"
+      ]
+    },
+    "Teacher": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Teacher",
+      "type": "object",
+      "description": "Represents a teacher user in the system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the teacher user."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the teacher user.",
+          "format": "email"
+        },
+        "departmentId": {
+          "type": "string",
+          "description": "Reference to the Department entity. (Relationship: Department 1:N Teacher)"
+        },
+        "designation": {
+          "type": "string",
+          "description": "The teacher's job title or designation."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "departmentId"
+      ]
+    },
+    "Student": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Student",
+      "type": "object",
+      "description": "Represents a student user in the system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the student user."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the student user.",
+          "format": "email"
+        },
+        "semester": {
+          "type": "number",
+          "description": "The current semester the student is in."
+        },
+        "skills": {
+          "type": "string",
+          "description": "A list of skills possessed by the student."
+        }
+      },
+      "required": [
+        "id",
+        "email"
+      ]
+    },
+    "Department": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Department",
+      "type": "object",
+      "description": "Represents a department within the academic institution.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the department."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the department."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "Group": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Group",
+      "type": "object",
+      "description": "Represents a group of students working on a capstone project.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the group."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the group."
+        },
+        "leaderId": {
+          "type": "string",
+          "description": "Reference to the Student entity who is the leader of the group. (Relationship: Student 1:N Group)"
+        },
+        "memberIds": {
+          "type": "array",
+          "description": "References to Students who are members of the group. (Relationship: Student N:N Group)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "teacherId": {
+          "type": "string",
+          "description": "Reference to the Teacher entity who is supervising the group. (Relationship: Teacher 1:N Group)"
+        },
+        "departmentId": {
+          "type": "string",
+          "description": "Reference to the Department entity to which the group belongs. (Relationship: Department 1:N Group)"
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the group (e.g., INCOMPLETE, ACTIVE)."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "leaderId",
+        "teacherId",
+        "departmentId",
+        "status"
+      ]
+    },
+    "Proposal": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Proposal",
+      "type": "object",
+      "description": "Represents a project proposal submitted by a group.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the proposal."
+        },
+        "groupId": {
+          "type": "string",
+          "description": "Reference to the Group entity to which the proposal belongs. (Relationship: Group 1:N Proposal)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the proposal."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the proposal."
+        },
+        "techStack": {
+          "type": "string",
+          "description": "The technologies used in the proposal."
+        },
+        "pdfUrl": {
+          "type": "string",
+          "description": "URL to the PDF document of the proposal.",
+          "format": "uri"
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the proposal (e.g., PENDING, APPROVED, REJECTED)."
+        }
+      },
+      "required": [
+        "id",
+        "groupId",
+        "title",
+        "description",
+        "techStack",
+        "pdfUrl",
+        "status"
+      ]
+    },
+    "Attendance": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Attendance",
+      "type": "object",
+      "description": "Represents the attendance record for a student in a group on a specific date.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the attendance record."
+        },
+        "groupId": {
+          "type": "string",
+          "description": "Reference to the Group entity. (Relationship: Group 1:N Attendance)"
+        },
+        "studentId": {
+          "type": "string",
+          "description": "Reference to the Student entity. (Relationship: Student 1:N Attendance)"
+        },
+        "date": {
+          "type": "string",
+          "description": "The date for which the attendance is recorded.",
+          "format": "date-time"
+        },
+        "isPresent": {
+          "type": "boolean",
+          "description": "Indicates whether the student was present or absent."
+        }
+      },
+      "required": [
+        "id",
+        "groupId",
+        "studentId",
+        "date",
+        "isPresent"
+      ]
+    },
+    "Task": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Task",
+      "type": "object",
+      "description": "Represents a task assigned to a student in a group.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the task."
+        },
+        "groupId": {
+          "type": "string",
+          "description": "Reference to the Group entity. (Relationship: Group 1:N Task)"
+        },
+        "assigneeId": {
+          "type": "string",
+          "description": "Reference to the Student entity to whom the task is assigned. (Relationship: Student 1:N Task)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the task."
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the task (e.g., ASSIGNED, IN_PROGRESS, COMPLETED)."
+        }
+      },
+      "required": [
+        "id",
+        "groupId",
+        "assigneeId",
+        "description",
+        "status"
+      ]
+    },
+    "ChatMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ChatMessage",
+      "type": "object",
+      "description": "Represents a chat message within a group or global chat.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the chat message."
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Reference to the user who sent the message (Student, Teacher, or Admin)."
+        },
+        "senderRole": {
+          "type": "string",
+          "description": "Role of the user who sent the message (ADMIN, TEACHER, STUDENT)."
+        },
+        "content": {
+          "type": "string",
+          "description": "Content of the chat message."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the message was sent.",
+          "format": "date-time"
+        },
+        "attachments": {
+          "type": "array",
+          "description": "Array of URLs of attachments for the message.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "senderId",
+        "senderRole",
+        "content",
+        "timestamp"
+      ]
+    },
+    "GlobalChat": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GlobalChat",
+      "type": "object",
+      "description": "Represents a global chat accessible to admins and teachers.",
+      "properties": {
+        "messageId": {
+          "type": "string",
+          "description": "Reference to ChatMessage entity. (Relationship: ChatMessage 1:1 GlobalChat)"
+        }
+      },
+      "required": [
+        "messageId"
+      ]
+    },
+    "GroupChat": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GroupChat",
+      "type": "object",
+      "description": "Represents a chat specific to a group, including teachers and students.",
+      "properties": {
+        "groupId": {
+          "type": "string",
+          "description": "Reference to the Group entity. (Relationship: Group 1:1 GroupChat)"
+        },
+        "messageIds": {
+          "type": "array",
+          "description": "References to ChatMessage entities. (Relationship: ChatMessage 1:N GroupChat)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "groupId"
+      ]
+    },
+    "SessionChat": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SessionChat",
+      "type": "object",
+      "description": "Represents a chat for a live session, accessible to session participants.",
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "description": "Unique identifier for the session."
+        },
+        "groupIds": {
+          "type": "array",
+          "description": "References to Group entities participating in the session.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "messageIds": {
+          "type": "array",
+          "description": "References to ChatMessage entities. (Relationship: ChatMessage 1:N SessionChat)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "sessionId"
+      ]
+    },
+    "Evaluation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Evaluation",
+      "type": "object",
+      "description": "Represents the evaluation and marks given by a teacher to a student in a group.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the evaluation record."
+        },
+        "groupId": {
+          "type": "string",
+          "description": "Reference to the Group entity. (Relationship: Group 1:N Evaluation)"
+        },
+        "studentId": {
+          "type": "string",
+          "description": "Reference to the Student entity being evaluated. (Relationship: Student 1:N Evaluation)"
+        },
+        "marks": {
+          "type": "number",
+          "description": "The marks awarded to the student."
+        },
+        "teacherId": {
+          "type": "string",
+          "description": "Reference to the Teacher entity who is evaluating. (Relationship: Teacher 1:N Evaluation)"
+        }
+      },
+      "required": [
+        "id",
+        "groupId",
+        "studentId",
+        "marks",
+        "teacherId"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/roles_admin/{adminId}",
+        "definition": {
+          "entityName": "Admin",
+          "schema": {
+            "$ref": "#/backend/entities/Admin"
+          },
+          "description": "Collection to store admin roles. The existence of a document with the admin's UID grants admin privileges.",
+          "params": [
+            {
+              "name": "adminId",
+              "description": "The unique identifier of the administrator."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_teacher/{teacherId}",
+        "definition": {
+          "entityName": "Teacher",
+          "schema": {
+            "$ref": "#/backend/entities/Teacher"
+          },
+          "description": "Collection to store teacher roles. The existence of a document with the teacher's UID grants teacher privileges.",
+          "params": [
+            {
+              "name": "teacherId",
+              "description": "The unique identifier of the teacher."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_student/{studentId}",
+        "definition": {
+          "entityName": "Student",
+          "schema": {
+            "$ref": "#/backend/entities/Student"
+          },
+          "description": "Collection to store student roles. The existence of a document with the student's UID grants student privileges.",
+          "params": [
+            {
+              "name": "studentId",
+              "description": "The unique identifier of the student."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/departments/{departmentId}",
+        "definition": {
+          "entityName": "Department",
+          "schema": {
+            "$ref": "#/backend/entities/Department"
+          },
+          "description": "Collection to store department information.",
+          "params": [
+            {
+              "name": "departmentId",
+              "description": "The unique identifier of the department."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/Student"
+          },
+          "description": "Collection for storing user profiles (students).",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user (student)."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/teachers/{teacherId}",
+        "definition": {
+          "entityName": "Teacher",
+          "schema": {
+            "$ref": "#/backend/entities/Teacher"
+          },
+          "description": "Collection for storing teacher profiles.",
+          "params": [
+            {
+              "name": "teacherId",
+              "description": "The unique identifier of the teacher."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/groups/{groupId}",
+        "definition": {
+          "entityName": "Group",
+          "schema": {
+            "$ref": "#/backend/entities/Group"
+          },
+          "description": "Collection for storing group information. Includes denormalized 'teacherId' and 'memberIds' for authorization independence.",
+          "params": [
+            {
+              "name": "groupId",
+              "description": "The unique identifier of the group."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/groups/{groupId}/proposals/{proposalId}",
+        "definition": {
+          "entityName": "Proposal",
+          "schema": {
+            "$ref": "#/backend/entities/Proposal"
+          },
+          "description": "Subcollection for storing proposals associated with a group.",
+          "params": [
+            {
+              "name": "groupId",
+              "description": "The unique identifier of the group."
+            },
+            {
+              "name": "proposalId",
+              "description": "The unique identifier of the proposal."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/groups/{groupId}/attendance/{attendanceId}",
+        "definition": {
+          "entityName": "Attendance",
+          "schema": {
+            "$ref": "#/backend/entities/Attendance"
+          },
+          "description": "Subcollection for storing attendance records for a group.",
+          "params": [
+            {
+              "name": "groupId",
+              "description": "The unique identifier of the group."
+            },
+            {
+              "name": "attendanceId",
+              "description": "The unique identifier of the attendance record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/groups/{groupId}/tasks/{taskId}",
+        "definition": {
+          "entityName": "Task",
+          "schema": {
+            "$ref": "#/backend/entities/Task"
+          },
+          "description": "Subcollection for storing tasks associated with a group.",
+          "params": [
+            {
+              "name": "groupId",
+              "description": "The unique identifier of the group."
+            },
+            {
+              "name": "taskId",
+              "description": "The unique identifier of the task."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/global_chat/{chatMessageId}",
+        "definition": {
+          "entityName": "GlobalChat",
+          "schema": {
+            "$ref": "#/backend/entities/GlobalChat"
+          },
+          "description": "Collection for global chat messages, accessible to admins and teachers.",
+          "params": [
+            {
+              "name": "chatMessageId",
+              "description": "The unique identifier of the chat message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/group_chats/{groupId}/messages/{chatMessageId}",
+        "definition": {
+          "entityName": "ChatMessage",
+          "schema": {
+            "$ref": "#/backend/entities/ChatMessage"
+          },
+          "description": "Subcollection for storing chat messages within a group. Includes denormalized 'groupId' for authorization independence.",
+          "params": [
+            {
+              "name": "groupId",
+              "description": "The unique identifier of the group."
+            },
+            {
+              "name": "chatMessageId",
+              "description": "The unique identifier of the chat message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/session_chats/{sessionId}/messages/{chatMessageId}",
+        "definition": {
+          "entityName": "ChatMessage",
+          "schema": {
+            "$ref": "#/backend/entities/ChatMessage"
+          },
+          "description": "Subcollection for storing chat messages within a session.",
+          "params": [
+            {
+              "name": "sessionId",
+              "description": "The unique identifier of the session."
+            },
+            {
+              "name": "chatMessageId",
+              "description": "The unique identifier of the chat message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/groups/{groupId}/evaluations/{evaluationId}",
+        "definition": {
+          "entityName": "Evaluation",
+          "schema": {
+            "$ref": "#/backend/entities/Evaluation"
+          },
+          "description": "Subcollection for storing evaluations of students within a group.",
+          "params": [
+            {
+              "name": "groupId",
+              "description": "The unique identifier of the group."
+            },
+            {
+              "name": "evaluationId",
+              "description": "The unique identifier of the evaluation record."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to support role-based access control and real-time updates for the CapstoneFlow application. It prioritizes authorization independence by denormalizing access control data (roles) directly within relevant documents, avoiding `get()` calls in security rules. This is achieved through membership maps and dedicated role collections. Structural segregation is applied by creating separate collections for global chat, group chats, and session chats, each with distinct security requirements. The structure also facilitates secure `list` operations by ensuring that each collection has a homogeneous security posture.\n\n**Authorization Independence (Denormalization):** The `groups` collection contains the `teacherId` and a `memberIds` array to determine group membership. Group-specific data like `GroupChat` includes a `groupId` to associate the chat with the relevant group. This denormalization allows security rules to validate access without needing to perform additional reads (`get()`) to determine group membership or ownership.\n\n**QAPs (Rules are not Filters):** Secure `list` operations are supported by structuring data to allow direct queries based on user roles and group memberships. For example, a teacher can securely list all groups where their `id` is in the `teacherId` field, and students can list groups where their `id` is in the `memberIds` array. Separate collections for `global_chat`, `group_chats`, and `session_chats` also ensure that listing operations are always performed on homogeneous datasets with consistent security requirements.\n\n**Role-Based Access Control:** Roles are managed through dedicated collections (`roles_admin`, `roles_teacher`, `roles_student`). The existence of a document in these collections grants the corresponding role to the user. Additionally, `groups` are explicitly linked to teachers and students through `teacherId` and `memberIds`.\n\n**Real-time Updates and Chat Features:** The structure supports real-time updates by utilizing separate collections for each type of chat (global, group, session). This allows for efficient querying and listening for updates within each context."
+  }
+}
