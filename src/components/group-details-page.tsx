@@ -20,7 +20,7 @@ import Link from 'next/link';
 import {
   tasks as allTasks,
   students as allStudents,
-  sessions,
+  sessions as allSessions,
 } from '@/lib/data';
 import {
   Table,
@@ -50,8 +50,8 @@ import {
   SelectValue,
 } from './ui/select';
 import { Slider } from './ui/slider';
-import { cn } from '@/lib/utils';
 import { ScrollArea, ScrollBar } from './ui/scroll-area';
+import { AttendanceTracker } from './attendance-tracker';
 
 interface GroupDetailsPageProps {
   role: UserRole;
@@ -70,7 +70,7 @@ export function GroupDetailsPage({
   const defaultTab = searchParams.get('tab') || 'overview';
   const groupTasks = allTasks.slice(0, 3); // Demo tasks
   const loggedInStudent = allStudents[0];
-  const groupSessions = sessions.filter((s) => s.groupId === group.id);
+  const groupSessions = allSessions.filter((s) => s.groupId === group.id);
 
   return (
     <div className="space-y-6">
@@ -99,9 +99,9 @@ export function GroupDetailsPage({
         </CardContent>
       </Card>
 
-      <Tabs defaultValue={defaultTab}>
+      <Tabs defaultValue={defaultTab} className="w-full">
         <ScrollArea className="w-full whitespace-nowrap">
-          <TabsList className="w-full justify-start">
+          <TabsList className="flex w-max">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="members">Members</TabsTrigger>
             <TabsTrigger value="proposal">Proposal</TabsTrigger>
@@ -192,11 +192,6 @@ export function GroupDetailsPage({
                           <p className="text-sm text-muted-foreground">
                             {member.email}
                           </p>
-                          {(role === 'teacher' || role === 'admin') && (
-                            <p className="text-sm text-muted-foreground">
-                              Attendance: 95%
-                            </p>
-                          )}
                         </div>
                       </div>
                     );
@@ -444,53 +439,12 @@ export function GroupDetailsPage({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {groupSessions.length > 0 ? (
-                <ScrollArea className="w-full whitespace-nowrap rounded-md border">
-                  <div className="relative w-full overflow-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="font-semibold w-[150px] sticky left-0 bg-background">Student</TableHead>
-                          {groupSessions.map((session) => (
-                            <TableHead key={session.id} className="text-center">
-                              {new Date(session.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                            </TableHead>
-                          ))}
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {members.map((member) => (
-                          <TableRow key={member.id}>
-                            <TableCell className="font-medium sticky left-0 bg-background/95 backdrop-blur-sm">{member.name}</TableCell>
-                            {groupSessions.map((session) => {
-                              const isPresent = session.attendees.includes(member.id);
-                              return (
-                                <TableCell key={session.id} className="text-center">
-                                  {role === 'teacher' ? (
-                                    <div className="flex justify-center gap-1">
-                                      <Button size="icon" variant={isPresent ? 'default' : 'outline'} className='h-7 w-7 rounded-full'>P</Button>
-                                      <Button size="icon" variant={!isPresent ? 'destructive' : 'outline'} className='h-7 w-7 rounded-full'>A</Button>
-                                    </div>
-                                  ) : (
-                                    <Badge variant={isPresent ? 'default' : 'destructive'}>
-                                      {isPresent ? 'P' : 'A'}
-                                    </Badge>
-                                  )}
-                                </TableCell>
-                              )
-                            })}
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                   <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  No sessions have been scheduled for this group yet.
-                </div>
-              )}
+               <AttendanceTracker
+                  role={role}
+                  group={group}
+                  members={members}
+                  sessions={groupSessions}
+                />
             </CardContent>
           </Card>
         </TabsContent>
@@ -498,4 +452,3 @@ export function GroupDetailsPage({
     </div>
   );
 }
-
