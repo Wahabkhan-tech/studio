@@ -1,4 +1,4 @@
-import { groups } from '@/lib/data';
+import { groups, teachers } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -11,7 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 
 export default function MyGroupsPage() {
-  const assignedGroups = groups.filter((g) => g.supervisorId === 't1');
+  const loggedInTeacherId = teachers[0].id;
+  const assignedGroups = groups.filter((g) => g.supervisorId === loggedInTeacherId);
 
   return (
     <div>
@@ -51,3 +52,5 @@ export default function MyGroupsPage() {
     </div>
   );
 }
+
+    

@@ -21,26 +21,27 @@ type UserNavProps = {
 };
 
 export function UserNav({ role }: UserNavProps) {
-  let user, userEmail, userAvatarId, roleLabel;
+  let userName, userEmail, userAvatarId;
 
+  // In a real app, you'd get the logged-in user's data from a session or context.
+  // Here, we'll just pick the first one from the mock data for demonstration.
   switch (role) {
     case 'admin':
-      user = 'Admin User';
+      userName = 'Admin User';
       userEmail = 'admin@protracks.com';
-      userAvatarId = '10';
-      roleLabel = 'Administrator';
+      userAvatarId = '10'; // Using teacher avatar for admin
       break;
     case 'teacher':
-      user = teachers[0].name;
-      userEmail = teachers[0].email;
-      userAvatarId = teachers[0].avatar;
-      roleLabel = 'Teacher';
+      const teacher = teachers[0];
+      userName = teacher.name;
+      userEmail = teacher.email;
+      userAvatarId = teacher.avatar;
       break;
     case 'student':
-      user = students[0].name;
-      userEmail = students[0].email;
-      userAvatarId = students[0].avatar;
-      roleLabel = 'Student';
+      const student = students[0];
+      userName = student.name;
+      userEmail = student.email;
+      userAvatarId = student.avatar;
       break;
   }
 
@@ -54,18 +55,18 @@ export function UserNav({ role }: UserNavProps) {
             {avatar && (
               <AvatarImage
                 src={avatar.imageUrl}
-                alt={user || 'User'}
+                alt={userName || 'User'}
                 data-ai-hint={avatar.imageHint}
               />
             )}
-            <AvatarFallback>{user ? user.charAt(0) : 'U'}</AvatarFallback>
+            <AvatarFallback>{userName ? userName.charAt(0) : 'U'}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user}</p>
+            <p className="text-sm font-medium leading-none">{userName}</p>
             <p className="text-xs leading-none text-muted-foreground">{userEmail}</p>
           </div>
         </DropdownMenuLabel>
@@ -74,6 +75,14 @@ export function UserNav({ role }: UserNavProps) {
           {role === 'student' && (
             <DropdownMenuItem asChild>
               <Link href="/student/profile">
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
+           {role === 'teacher' && (
+            <DropdownMenuItem asChild>
+              <Link href="/teacher/profile">
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </Link>
@@ -107,3 +116,5 @@ export function UserNav({ role }: UserNavProps) {
     </DropdownMenu>
   );
 }
+
+    

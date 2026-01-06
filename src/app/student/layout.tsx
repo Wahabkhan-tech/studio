@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Header } from '@/components/header';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { groups } from '@/lib/data';
+import { groups, students } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { redirect } from 'next/navigation';
 
@@ -31,7 +31,8 @@ export default function StudentLayout({
 }) {
   // In a real app, this data would come from auth/session state.
   // We simulate it here for demonstration.
-  const myGroup = groups.find((g) => g.id === 'g2');
+  const loggedInStudent = students[0];
+  const myGroup = groups.find((g) => g.memberIds.includes(loggedInStudent.id));
   const isProfileComplete = myGroup?.proposal.status === 'APPROVED';
   
   // This logic should be adapted when real authentication is in place.
@@ -146,3 +147,5 @@ export default function StudentLayout({
     </SidebarProvider>
   );
 }
+
+    

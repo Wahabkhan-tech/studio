@@ -75,11 +75,11 @@ export default function TeacherManagementPage() {
               <div className="grid gap-4 py-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" placeholder="e.g., Dr. Ian Malcolm" />
+                  <Input id="name" placeholder="e.g., Sir Alex" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
-                  <Input id="email" type="email" placeholder="e.g., ian.malcolm@example.com" />
+                  <Input id="email" type="email" placeholder="e.g., alex@example.com" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="designation">Designation</Label>
@@ -184,9 +184,11 @@ export default function TeacherManagementPage() {
       </CardContent>
       <CardFooter>
         <div className="text-xs text-muted-foreground">
-          Showing <strong>1-2</strong> of <strong>2</strong> teachers
+          Showing <strong>1-{teachers.length}</strong> of <strong>{teachers.length}</strong> teachers
         </div>
       </CardFooter>
     </Card>
   );
 }
+
+    

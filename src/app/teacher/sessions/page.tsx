@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Users } from 'lucide-react';
-import { groups } from '@/lib/data';
+import { groups, teachers } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,13 +19,14 @@ import {
 
 
 export default function SessionManagementPage() {
-    const teacherGroups = groups.filter(g => g.supervisorId === 't1');
+    const loggedInTeacherId = teachers[0].id;
+    const teacherGroups = groups.filter(g => g.supervisorId === loggedInTeacherId);
     const upcomingSessions = [
-        { id: 'ses1', title: 'Weekly Sync - AI Innovators', group: 'AI Innovators', date: '2024-07-25', status: 'SCHEDULED' },
-        { id: 'ses2', title: 'Proposal Discussion - Web Wizards', group: 'Web Wizards', date: '2024-07-26', status: 'SCHEDULED' },
+        { id: 'ses1', title: 'Weekly Sync - Group 1', group: 'Group 1', date: '2024-07-25', status: 'SCHEDULED' },
+        { id: 'ses2', title: 'Proposal Discussion - Group 2', group: 'Group 2', date: '2024-07-26', status: 'SCHEDULED' },
     ];
     const pastSessions = [
-        { id: 'ses3', title: 'Initial Kick-off', group: 'AI Innovators', date: '2024-07-18', status: 'COMPLETED' },
+        { id: 'ses3', title: 'Initial Kick-off', group: 'Group 1', date: '2024-07-18', status: 'COMPLETED' },
     ]
 
   return (
@@ -138,3 +139,5 @@ export default function SessionManagementPage() {
     </div>
   );
 }
+
+    

@@ -20,7 +20,8 @@ import { tasks, students } from '@/lib/data';
 import { useState } from 'react';
 
 export default function StudentTasksPage() {
-  const [myTasks, setMyTasks] = useState(tasks.filter(t => t.assignedTo === 's1' || t.assignedTo === 's5'));
+  const loggedInStudentId = students[0].id; // For demo purposes
+  const [myTasks, setMyTasks] = useState(tasks.filter(t => t.assignedTo === loggedInStudentId));
 
   const handleStatusChange = (taskId: string, newStatus: 'In Progress' | 'Done') => {
     setMyTasks(currentTasks => currentTasks.map(task => 
@@ -50,7 +51,7 @@ export default function StudentTasksPage() {
           <TableBody>
             {myTasks.map((task) => {
               const assignee = students.find(s => s.id === task.assignedTo);
-              const isMyTask = task.assignedTo === 's1';
+              const isMyTask = task.assignedTo === loggedInStudentId;
               return (
               <TableRow key={task.id}>
                 <TableCell className="font-medium">{task.title}</TableCell>
@@ -85,3 +86,5 @@ export default function StudentTasksPage() {
     </Card>
   );
 }
+
+    

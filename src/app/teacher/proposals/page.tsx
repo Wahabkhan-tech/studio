@@ -13,8 +13,9 @@ import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 
 export default function ProposalReviewPage() {
+    const loggedInTeacherId = teachers[0].id;
   const pendingProposals = groups.filter(
-    (g) => g.proposal.status === 'PENDING' && g.supervisorId === 't1'
+    (g) => g.proposal.status === 'PENDING' && g.supervisorId === loggedInTeacherId
   );
 
   if (pendingProposals.length === 0) {
@@ -36,7 +37,6 @@ export default function ProposalReviewPage() {
   }
 
   const proposal = pendingProposals[0]; // For demonstration, we'll review the first pending proposal.
-  const supervisor = teachers.find((t) => t.id === proposal.supervisorId);
 
   return (
     <div className="grid gap-8 md:grid-cols-3">
@@ -107,3 +107,5 @@ export default function ProposalReviewPage() {
     </div>
   );
 }
+
+    

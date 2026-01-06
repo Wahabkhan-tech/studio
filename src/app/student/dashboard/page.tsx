@@ -1,6 +1,5 @@
 
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,15 +9,15 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { groups } from '@/lib/data';
-import { ArrowRight, BadgeInfo, Book, Package, ShieldCheck, Hourglass, XCircle } from 'lucide-react';
+import { groups, students } from '@/lib/data';
+import { Book, Package, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function StudentDashboard() {
-  // Assuming the logged in student is part of group g2 for demonstration.
-  // In a real app, this would be based on the logged-in user's data.
-  const myGroup = groups.find((g) => g.id === 'g2');
-
+  // Assuming the logged in student is the first one in the list for demonstration.
+  const loggedInStudent = students[0];
+  const myGroup = groups.find((g) => g.memberIds.includes(loggedInStudent.id));
+  
   // In a real app, this status would determine if the user sees the dashboard or is redirected to onboarding
   const profileStatus = myGroup?.proposal.status === 'APPROVED' ? 'COMPLETE' : 'INCOMPLETE';
 
@@ -114,3 +113,5 @@ export default function StudentDashboard() {
     </div>
   );
 }
+
+    

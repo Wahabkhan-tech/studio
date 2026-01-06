@@ -1,52 +1,64 @@
 {
   "placeholderImages": [
     {
-      "id": "1",
-      "description": "Avatar for Alice Johnson",
+      "id": "11",
+      "description": "Avatar for a student",
       "imageUrl": "https://images.unsplash.com/photo-1592621385612-4d7129426394?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NzQ1MDI2MXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman portrait"
     },
     {
-      "id": "2",
-      "description": "Avatar for Bob Williams",
+      "id": "12",
+      "description": "Avatar for a student",
       "imageUrl": "https://images.unsplash.com/photo-1607031542107-f6f46b5d54e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3Njc0NDgzMDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
     },
     {
-      "id": "3",
-      "description": "Avatar for Charlie Brown",
+      "id": "13",
+      "description": "Avatar for a student",
       "imageUrl": "https://images.unsplash.com/photo-1621873982312-1f83e89a2f21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYW4lMjBnbGFzc2VzfGVufDB8fHx8MTc2NzU0NDQ1OHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man glasses"
     },
     {
-      "id": "4",
-      "description": "Avatar for Diana Prince",
+      "id": "14",
+      "description": "Avatar for a student",
       "imageUrl": "https://images.unsplash.com/photo-1592621385612-4d7129426394?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx3b21hbiUyMHNtaWxpbmd8ZW58MHx8fHwxNzY3NTI2NTExfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman smiling"
     },
     {
-      "id": "5",
-      "description": "Avatar for Eve Adams",
+      "id": "21",
+      "description": "Avatar for a student",
       "imageUrl": "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3b21hbiUyMHByb2Zlc3Npb25hbHxlbnwwfHx8fDE3Njc1MTA2MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman professional"
     },
     {
-      "id": "6",
-      "description": "Avatar for Frank Miller",
+      "id": "22",
+      "description": "Avatar for a student",
       "imageUrl": "https://images.unsplash.com/photo-1579403548669-2c95ed0a4fee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bWFuJTIwdGVjaHxlbnwwfHx8fDE3Njc1NjEwMDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man tech"
     },
     {
+      "id": "23",
+      "description": "Avatar for a student",
+      "imageUrl": "https://images.unsplash.com/photo-1592621385612-4d7129426394?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NzQ1MDI2MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "24",
+      "description": "Avatar for a student",
+      "imageUrl": "https://images.unsplash.com/photo-1607031542107-f6f46b5d54e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3Njc0NDgzMDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man portrait"
+    },
+    {
       "id": "10",
-      "description": "Avatar for Dr. Alan Grant",
+      "description": "Avatar for Sir Mukesh",
       "imageUrl": "https://images.unsplash.com/photo-1758270704925-fa59d93119c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwcm9mZXNzb3IlMjBtYWxlfGVufDB8fHx8MTc2NzU2MTAwNXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "professor male"
     },
     {
       "id": "11",
-      "description": "Avatar for Dr. Ellie Sattler",
-      "imageUrl": "https://images.unsplash.com/photo-1693434234552-d9913a8dcaf9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cHJvZmVzc29yJTIwZmVtYWxlfGVufDB8fHx8MTc2NzU2MTAwNXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "professor female"
+      "description": "Avatar for Sir Nadeem",
+      "imageUrl": "https://images.unsplash.com/photo-1579403548669-2c95ed0a4fee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bWFuJTIwdGVjaHxlbnwwfHx8fDE3Njc1NjEwMDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man tech"
     }
   ]
 }

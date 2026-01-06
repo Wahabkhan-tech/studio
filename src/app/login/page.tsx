@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
+import { teachers } from '@/lib/data';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,16 +27,13 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // In a real app, you'd have different logic based on role
-    // For now, we'll just simulate a delay and redirect.
     setTimeout(() => {
         if (email.toLowerCase() === 'admin@protracks.com') {
             router.push('/admin/dashboard');
-        } else if (email.toLowerCase() === 'alan.grant@example.com' || email.toLowerCase() === 'ellie.sattler@example.com') {
+        } else if (teachers.some(t => t.email.toLowerCase() === email.toLowerCase())) {
             router.push('/teacher/dashboard');
         } else {
-            // In a real app, show an error toast
-            router.push('/student/onboarding'); // Default redirect for demo
+            router.push('/student/dashboard');
         }
     }, 1500)
   };
@@ -79,7 +77,7 @@ export default function LoginPage() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" required disabled={isLoading} />
+              <Input id="password" type="password" required disabled={isLoading} defaultValue="password" />
             </div>
           </CardContent>
           <CardFooter className='flex flex-col gap-4'>
@@ -104,7 +102,8 @@ export default function LoginPage() {
         <AlertDescription>
           <ul className="text-xs space-y-1 mt-2">
             <li><strong>Admin:</strong> <code>admin@protracks.com</code></li>
-            <li><strong>Teacher:</strong> <code>alan.grant@example.com</code></li>
+            <li><strong>Teacher 1:</strong> <code>{teachers[0].email}</code></li>
+            <li><strong>Teacher 2:</strong> <code>{teachers[1].email}</code></li>
             <li>Any password will work for this demo.</li>
           </ul>
         </AlertDescription>
@@ -112,3 +111,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    

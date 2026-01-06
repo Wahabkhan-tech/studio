@@ -13,12 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { groups, students as allStudents, sessions as allSessions } from '@/lib/data';
+import { groups, students as allStudents, sessions as allSessions, teachers } from '@/lib/data';
 import { useState } from 'react';
 import { AttendanceTracker } from '@/components/attendance-tracker';
 
 export default function AttendanceManagementPage() {
-  const teacherGroups = groups.filter((g) => g.supervisorId === 't1');
+  const loggedInTeacherId = teachers[0].id;
+  const teacherGroups = groups.filter((g) => g.supervisorId === loggedInTeacherId);
   const [selectedGroupId, setSelectedGroupId] = useState(teacherGroups[0].id);
 
   const selectedGroup = teacherGroups.find(g => g.id === selectedGroupId)!;
@@ -59,3 +60,5 @@ export default function AttendanceManagementPage() {
     </Card>
   );
 }
+
+    

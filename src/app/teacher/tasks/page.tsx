@@ -17,15 +17,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { tasks, students, groups } from '@/lib/data';
+import { tasks, students, groups, teachers } from '@/lib/data';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PlusCircle } from 'lucide-react';
 
 export default function TeacherTasksPage() {
-    const teacherGroups = groups.filter(g => g.supervisorId === 't1');
-    // For demo, showing tasks from all supervised groups
+    const loggedInTeacherId = teachers[0].id;
+    const teacherGroups = groups.filter(g => g.supervisorId === loggedInTeacherId);
     const supervisedStudentIds = teacherGroups.flatMap(g => g.memberIds);
     const supervisedTasks = tasks.filter(t => supervisedStudentIds.includes(t.assignedTo));
 
@@ -146,3 +146,5 @@ export default function TeacherTasksPage() {
     </Card>
   );
 }
+
+    

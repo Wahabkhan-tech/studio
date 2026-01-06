@@ -11,19 +11,19 @@ import { cn } from '@/lib/utils';
 import { Send, Users, UserCog } from 'lucide-react';
 
 const initialMessages = [
-  { id: 'm1', senderId: 's5', text: "Hey, I've pushed the initial schema design. Can you take a look?", timestamp: "09:30 AM" },
-  { id: 'm2', senderId: 's1', text: "Sure, checking it out now. Looks like a good start!", timestamp: "09:32 AM" },
-  { id: 'm3', senderId: 's5', text: "Great. Let me know if any changes are needed for the auth part.", timestamp: "09:33 AM" },
+  { id: 'm1', senderId: 'EB22210006139', text: "Hey, I've pushed the initial schema design. Can you take a look?", timestamp: "09:30 AM" },
+  { id: 'm2', senderId: 'EB22210006137', text: "Sure, checking it out now. Looks like a good start!", timestamp: "09:32 AM" },
+  { id: 'm3', senderId: 'EB22210006139', text: "Great. Let me know if any changes are needed for the auth part.", timestamp: "09:33 AM" },
 ];
 
 export default function StudentChatPage() {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState('');
   
-  const myGroup = groups.find((g) => g.id === 'g2');
+  const loggedInStudent = students.find(s => s.id === 'EB22210006139')!;
+  const myGroup = groups.find((g) => g.memberIds.includes(loggedInStudent.id));
   const supervisor = teachers.find(t => t.id === myGroup?.supervisorId);
   const groupMembers = students.filter(s => myGroup?.memberIds.includes(s.id));
-  const loggedInStudent = students[0];
 
   const conversations = [
     { id: 'conv-group', name: myGroup?.name, type: 'group' },
@@ -141,3 +141,5 @@ export default function StudentChatPage() {
     </div>
   );
 }
+
+    

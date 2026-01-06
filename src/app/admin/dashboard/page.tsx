@@ -142,7 +142,7 @@ export default function AdminDashboard() {
                 <Users className="h-8 w-8 text-muted-foreground" />
                 <div className="grid gap-1">
                   <p className="text-sm font-medium leading-none">
-                    New teacher "Dr. Ian Malcolm" was added.
+                    New teacher "Sir Nadeem" was added.
                   </p>
                   <p className="text-sm text-muted-foreground">
                     by Admin User - 2 hours ago
@@ -153,10 +153,10 @@ export default function AdminDashboard() {
                 <BookCheck className="h-8 w-8 text-muted-foreground" />
                 <div className="grid gap-1">
                   <p className="text-sm font-medium leading-none">
-                    Proposal for "AI Innovators" was approved.
+                    Proposal for "Group 4" was approved.
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    by Dr. Alan Grant - 5 hours ago
+                    by Sir Mukesh - 5 hours ago
                   </p>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
                 <Package className="h-8 w-8 text-muted-foreground" />
                 <div className="grid gap-1">
                   <p className="text-sm font-medium leading-none">
-                    New group "Data Dynamos" was created.
+                    New group "Group 21" was created.
                   </p>
                   <p className="text-sm text-muted-foreground">
                     by Student Leader - 1 day ago
@@ -188,3 +188,5 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
+    

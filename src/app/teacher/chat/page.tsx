@@ -11,24 +11,24 @@ import { cn } from '@/lib/utils';
 import { Search, Send, Users, Shield } from 'lucide-react';
 
 const initialMessages = [
-  { id: 'm1', senderId: 's2', text: "Dr. Grant, we've completed the data collection phase. Ready to move on to model training.", timestamp: "11:00 AM" },
-  { id: 'm2', senderId: 't1', text: "Excellent work. Please prepare a summary of the dataset and your proposed model architecture.", timestamp: "11:05 AM" },
-  { id: 'm3', senderId: 's4', text: "I've updated the UI mockups based on our last discussion.", timestamp: "11:10 AM" },
+  { id: 'm1', senderId: 'EB22210006025', text: "Sir Mukesh, we've completed the data collection phase. Ready to move on to model training.", timestamp: "11:00 AM" },
+  { id: 'm2', senderId: 'T01', text: "Excellent work. Please prepare a summary of the dataset and your proposed model architecture.", timestamp: "11:05 AM" },
+  { id: 'm3', senderId: 'EB22210006055', text: "I've updated the UI mockups based on our last discussion.", timestamp: "11:10 AM" },
 ];
 
 export default function TeacherChatPage() {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState('');
   
-  const myGroups = groups.filter((g) => g.supervisorId === 't1');
   const loggedInTeacher = teachers[0];
+  const myGroups = groups.filter((g) => g.supervisorId === loggedInTeacher.id);
 
   const conversations = [
     { id: 'conv-admin', name: 'Admin', type: 'admin' },
     ...myGroups.map(g => ({ id: g.id, name: g.name, type: 'group' }))
   ];
 
-  const selectedConversationId = 'g1'; // AI Innovators
+  const selectedConversationId = 'G02'; 
   const selectedGroup = myGroups.find(g => g.id === selectedConversationId);
   const groupMembers = students.filter(s => selectedGroup?.memberIds.includes(s.id));
 
@@ -146,3 +146,5 @@ export default function TeacherChatPage() {
     </div>
   );
 }
+
+    
