@@ -26,7 +26,7 @@ export default function StudentDashboard() {
       return (
          <Card>
             <CardHeader>
-                <CardTitle>Welcome to CapstoneFlow</CardTitle>
+                <CardTitle>Welcome to Protracks</CardTitle>
                 <CardDescription>
                     Please complete the onboarding process to access your dashboard and project tools.
                 </CardDescription>

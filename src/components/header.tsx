@@ -104,7 +104,7 @@ export function Header({ role }: HeaderProps) {
               {role === 'admin' && <Users className="h-5 w-5 transition-all group-hover:scale-110" />}
               {role === 'teacher' && <UserCog className="h-5 w-5 transition-all group-hover:scale-110" />}
               {role === 'student' && <User className="h-5 w-5 transition-all group-hover:scale-110" />}
-              <span className="sr-only">CapstoneFlow</span>
+              <span className="sr-only">Protracks</span>
             </Link>
             {role === 'admin' && adminNav}
             {role === 'teacher' && teacherNav}

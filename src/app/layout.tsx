@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: 'CapstoneFlow',
+  title: 'Protracks',
   description:
     'A comprehensive platform for managing final year projects, connecting students, teachers, and administrators.',
 };

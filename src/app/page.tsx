@@ -9,7 +9,7 @@ export default function Home() {
       <div className="flex flex-col items-center text-center mb-12">
         <div className="flex items-center gap-4 mb-4">
           <GraduationCap className="h-12 w-12 text-primary" />
-          <h1 className="text-5xl font-bold tracking-tighter text-primary">CapstoneFlow</h1>
+          <h1 className="text-5xl font-bold tracking-tighter text-primary">Protracks</h1>
         </div>
         <p className="max-w-2xl text-lg text-muted-foreground">
           Streamline your final year project management. Connect students, guide teachers, and empower administrators.
@@ -37,14 +37,14 @@ export default function Home() {
             </Button>
             <Button asChild size="lg" className="w-full" variant="outline">
               <Link href="/login/student">
-                <User className="mr-2 h-5 w-5" /> Login as Student
+                <User className="mr-2 h-5 w-5" /> Student Login / Activation
               </Link>
             </Button>
           </div>
         </CardContent>
       </Card>
       <footer className="mt-12 text-sm text-muted-foreground">
-        © {new Date().getFullYear()} CapstoneFlow. All rights reserved.
+        © {new Date().getFullYear()} Protracks. All rights reserved.
       </footer>
     </div>
   );

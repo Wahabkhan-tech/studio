@@ -26,7 +26,7 @@ export function UserNav({ role }: UserNavProps) {
   switch (role) {
     case 'admin':
       user = 'Admin User';
-      userEmail = 'admin@capstone.flow';
+      userEmail = 'admin@protracks.com';
       userAvatarId = '10';
       roleLabel = 'Administrator';
       break;

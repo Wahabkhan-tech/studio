@@ -67,7 +67,7 @@ export default function StudentLoginPage() {
       <div className="flex flex-col items-center text-center mb-8">
          <Link href="/" className="flex items-center gap-4 mb-4">
           <GraduationCap className="h-10 w-10 text-primary" />
-          <h1 className="text-4xl font-bold tracking-tighter text-primary">CapstoneFlow</h1>
+          <h1 className="text-4xl font-bold tracking-tighter text-primary">Protracks</h1>
         </Link>
         <p className="max-w-lg text-md text-muted-foreground">
           Your journey to a successful final year project starts here.
