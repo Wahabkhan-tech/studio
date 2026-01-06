@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/accordion"
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-export default function StudentLoginPage() {
+export default function StudentActivationPage() {
   const [seatNumber, setSeatNumber] = useState('');
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -77,9 +77,9 @@ export default function StudentLoginPage() {
       <div className="w-full max-w-md space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Student Login & Activation</CardTitle>
+            <CardTitle className="text-2xl">Activate Your Student Account</CardTitle>
             <CardDescription>
-              Enter your seat number and official email to activate your account or log in.
+              Enter your official seat number and email address to begin.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -109,11 +109,18 @@ export default function StudentLoginPage() {
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isLoading ? 'Verifying...' : 'Login / Activate'}
+                {isLoading ? 'Verifying...' : 'Activate Account'}
               </Button>
             </form>
           </CardContent>
         </Card>
+        
+        <div className="mt-4 text-center text-sm">
+          Already have an account?{' '}
+          <Link href="/login" className="underline">
+              Sign in
+          </Link>
+        </div>
 
         <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">

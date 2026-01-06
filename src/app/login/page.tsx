@@ -35,7 +35,7 @@ export default function LoginPage() {
             router.push('/teacher/dashboard');
         } else {
             // In a real app, show an error toast
-            router.push('/admin/dashboard'); // Default redirect for demo
+            router.push('/student/onboarding'); // Default redirect for demo
         }
     }, 1500)
   };
@@ -53,7 +53,7 @@ export default function LoginPage() {
         </div>
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Admin & Teacher Login</CardTitle>
+          <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
             Enter your email below to login to your account.
           </CardDescription>
@@ -73,7 +73,12 @@ export default function LoginPage() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+                <Link href="#" className="ml-auto inline-block text-sm underline">
+                  Forgot your password?
+                </Link>
+              </div>
               <Input id="password" type="password" required disabled={isLoading} />
             </div>
           </CardContent>
@@ -82,16 +87,17 @@ export default function LoginPage() {
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Sign in
             </Button>
-            <div className="text-center text-sm">
-                Are you a student?{' '}
-                <Link href="/login/student" className="underline">
-                    Activate Your Account
-                </Link>
-            </div>
           </CardFooter>
         </form>
       </Card>
       
+       <div className="mt-4 text-center text-sm">
+          Don&apos;t have an account?{' '}
+          <Link href="/login/student" className="underline">
+              Activate your Student Account
+          </Link>
+        </div>
+
       <Alert className="mt-6 max-w-sm">
         <Info className="h-4 w-4" />
         <AlertTitle>Testing Credentials</AlertTitle>
