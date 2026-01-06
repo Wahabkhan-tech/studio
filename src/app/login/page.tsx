@@ -10,14 +10,17 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GraduationCap, Loader2, Shield, UserCog } from 'lucide-react';
+import { GraduationCap, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Info } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,9 +29,14 @@ export default function LoginPage() {
     // In a real app, you'd have different logic based on role
     // For now, we'll just simulate a delay and redirect.
     setTimeout(() => {
-        // A real app would check credentials and role
-        // For demo, we just redirect to admin dashboard
-        router.push('/admin/dashboard');
+        if (email.toLowerCase() === 'admin@protracks.com') {
+            router.push('/admin/dashboard');
+        } else if (email.toLowerCase() === 'alan.grant@example.com' || email.toLowerCase() === 'ellie.sattler@example.com') {
+            router.push('/teacher/dashboard');
+        } else {
+            // In a real app, show an error toast
+            router.push('/admin/dashboard'); // Default redirect for demo
+        }
     }, 1500)
   };
 
@@ -60,6 +68,8 @@ export default function LoginPage() {
                 placeholder="m@example.com"
                 required
                 disabled={isLoading}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
@@ -81,6 +91,18 @@ export default function LoginPage() {
           </CardFooter>
         </form>
       </Card>
+      
+      <Alert className="mt-6 max-w-sm">
+        <Info className="h-4 w-4" />
+        <AlertTitle>Testing Credentials</AlertTitle>
+        <AlertDescription>
+          <ul className="text-xs space-y-1 mt-2">
+            <li><strong>Admin:</strong> <code>admin@protracks.com</code></li>
+            <li><strong>Teacher:</strong> <code>alan.grant@example.com</code></li>
+            <li>Any password will work for this demo.</li>
+          </ul>
+        </AlertDescription>
+      </Alert>
     </div>
   );
 }
