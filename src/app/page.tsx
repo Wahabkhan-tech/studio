@@ -20,18 +20,18 @@ export default function Home() {
         <CardHeader>
           <CardTitle className="text-2xl text-center">Select Your Role</CardTitle>
           <CardDescription className="text-center">
-            Choose your dashboard to get started.
+            Choose your portal to get started.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
             <Button asChild size="lg" className="w-full">
-              <Link href="/admin/dashboard">
+              <Link href="/login">
                 <Shield className="mr-2 h-5 w-5" /> Login as Admin
               </Link>
             </Button>
             <Button asChild size="lg" className="w-full" variant="secondary">
-              <Link href="/teacher/dashboard">
+              <Link href="/login">
                 <UserCog className="mr-2 h-5 w-5" /> Login as Teacher
               </Link>
             </Button>
