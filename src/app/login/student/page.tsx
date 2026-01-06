@@ -14,9 +14,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { GraduationCap, Loader2 } from 'lucide-react';
+import { GraduationCap, Loader2, Info } from 'lucide-react';
 import { students } from '@/lib/data';
 import Link from 'next/link';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function StudentLoginPage() {
   const [seatNumber, setSeatNumber] = useState('');
@@ -32,10 +39,10 @@ export default function StudentLoginPage() {
     // Simulate system verification logic
     setTimeout(() => {
       const studentRecord = students.find(
-        (s) => s.id === `s${seatNumber.slice(-1)}` && s.email.toLowerCase() === email.toLowerCase()
+        (s) => s.registrationNumber.toLowerCase() === seatNumber.toLowerCase() && s.email.toLowerCase() === email.toLowerCase()
       );
       
-      // In a real app, you would check against a "NOT_ACTIVATED" status
+      // In a real app, you would also check against a "NOT_ACTIVATED" status from the backend
       if (studentRecord) {
         toast({
           title: 'Account Activated!',
@@ -67,45 +74,75 @@ export default function StudentLoginPage() {
         </p>
       </div>
 
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">Student Login & Activation</CardTitle>
-          <CardDescription>
-            Enter your seat number and official email to activate your account or log in.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleActivation} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="seat-number">Seat / Registration Number</Label>
-              <Input
-                id="seat-number"
-                placeholder="e.g., EB12345"
-                required
-                value={seatNumber}
-                onChange={(e) => setSeatNumber(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Official Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.edu"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLoading ? 'Verifying...' : 'Login / Activate'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+      <div className="w-full max-w-md space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Student Login & Activation</CardTitle>
+            <CardDescription>
+              Enter your seat number and official email to activate your account or log in.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleActivation} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="seat-number">Seat / Registration Number</Label>
+                <Input
+                  id="seat-number"
+                  placeholder="e.g., EB21101"
+                  required
+                  value={seatNumber}
+                  onChange={(e) => setSeatNumber(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Official Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.edu"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading ? 'Verifying...' : 'Login / Activate'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+                <AccordionTrigger>
+                    <div className='flex items-center gap-2'>
+                        <Info className='h-4 w-4'/> 
+                        <span>Testing Data</span>
+                    </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                <Alert>
+                    <AlertTitle>Mock Student Credentials</AlertTitle>
+                    <AlertDescription>
+                        <ul className="list-disc pl-5 mt-2 text-xs space-y-1">
+                        {students.map(student => (
+                            <li key={student.id}>
+                                <strong>{student.name}:</strong> 
+                                <div>Reg No: <code>{student.registrationNumber}</code></div>
+                                <div>Email: <code>{student.email}</code></div>
+                            </li>
+                        ))}
+                        </ul>
+                    </AlertDescription>
+                </Alert>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+      </div>
+
       <footer className="mt-8 text-sm text-muted-foreground">
         Having trouble? <Link href="#" className="underline">Contact Administrator</Link>
       </footer>

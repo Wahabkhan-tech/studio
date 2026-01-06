@@ -3,6 +3,7 @@ export type Student = {
   id: string;
   name: string;
   email: string;
+  registrationNumber: string;
   avatar: string;
   status: 'ACTIVE' | 'INACTIVE';
   semester: number;
