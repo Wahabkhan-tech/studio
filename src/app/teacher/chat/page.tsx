@@ -43,22 +43,22 @@ const initialMessages: {
       timestamp: '10:30 AM',
     },
   ],
-  [myGroups[0]?.id || 'G02']: [
+  [myGroups[0]?.id]: [
     {
       id: 'm1',
-      senderId: 'EB22210006025',
+      senderId: myGroups[0]?.memberIds[0] || 'student1',
       text: "Sir Mukesh, we've completed the data collection phase. Ready to move on to model training.",
       timestamp: '11:00 AM',
     },
     {
       id: 'm2',
-      senderId: 'T01',
+      senderId: loggedInTeacher.id,
       text: 'Excellent work. Please prepare a summary of the dataset and your proposed model architecture.',
       timestamp: '11:05 AM',
     },
-    {
+     {
       id: 'm3',
-      senderId: 'EB22210006055',
+      senderId: myGroups[0]?.memberIds[1] || 'student2',
       text: "I've updated the UI mockups based on our last discussion.",
       timestamp: '11:10 AM',
     },
@@ -69,7 +69,7 @@ export default function TeacherChatPage() {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState('');
   const [selectedConversationId, setSelectedConversationId] = useState(
-    initialConversations[1]?.id || 'G02'
+    initialConversations[1]?.id || ''
   );
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const { toast } = useToast();

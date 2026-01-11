@@ -102,9 +102,9 @@ export default function LoginPage() {
         <AlertDescription>
           <ul className="text-xs space-y-1 mt-2">
             <li><strong>Admin:</strong> <code>admin@protracks.com</code></li>
-            <li><strong>Teacher 1:</strong> <code>mukesh@protracks.com</code></li>
-            <li><strong>Teacher 2:</strong> <code>nadeem@protracks.com</code></li>
+            <li><strong>Teacher:</strong> <code>mukesh@protracks.com</code></li>
             <li>Any password will work for this demo.</li>
+            <li>Student accounts must be activated first.</li>
           </ul>
         </AlertDescription>
       </Alert>

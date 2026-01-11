@@ -24,21 +24,28 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { groups, students } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 
 export default function StudentLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = headers().get('next-url') || '';
+  
   // In a real app, this data would come from auth/session state.
   // We simulate it here for demonstration.
-  const loggedInStudent = students[0];
+  const loggedInStudent = students.find(s => s.id === 'EB22210006139'); // Yasir
+  if (!loggedInStudent) {
+      redirect('/login/student');
+  }
+
   const myGroup = groups.find((g) => g.memberIds.includes(loggedInStudent.id));
   const isProfileComplete = myGroup?.proposal.status === 'APPROVED';
   
-  // This logic should be adapted when real authentication is in place.
-  // For now, we manually control it. Uncomment the line below to test the redirect.
-  // if (!isProfileComplete) redirect('/student/onboarding');
+  if (!isProfileComplete && pathname !== '/student/onboarding' && pathname !== '/student/profile') {
+    redirect('/student/onboarding');
+  }
 
   const lockedTooltip = "Complete onboarding to unlock.";
 
@@ -72,9 +79,9 @@ export default function StudentLayout({
                 <TooltipTrigger asChild>
                   <Link
                     href={myGroup ? `/student/groups/${myGroup?.id}` : "/student/groups"}
-                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", isProfileComplete ? "hover:text-foreground" : "")}
+                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8")}
                   >
-                    {isProfileComplete ? <Package className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+                    {myGroup ? <Package className="h-5 w-5" /> : <Search className="h-5 w-5" />}
                     <span className="sr-only">{myGroup ? "My Group" : "Find Group"}</span>
                   </Link>
                 </TooltipTrigger>
