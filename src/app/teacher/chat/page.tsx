@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -10,39 +9,47 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
 import { Search, Send, Users, Shield } from 'lucide-react';
 
-const initialMessages = [
-  { id: 'm1', senderId: 'EB22210006025', text: "Sir Mukesh, we've completed the data collection phase. Ready to move on to model training.", timestamp: "11:00 AM" },
-  { id: 'm2', senderId: 'T01', text: "Excellent work. Please prepare a summary of the dataset and your proposed model architecture.", timestamp: "11:05 AM" },
-  { id: 'm3', senderId: 'EB22210006055', text: "I've updated the UI mockups based on our last discussion.", timestamp: "11:10 AM" },
+const loggedInTeacher = teachers[0];
+const myGroups = groups.filter((g) => g.supervisorId === loggedInTeacher.id);
+
+const initialConversations = [
+  { id: 'admin-chat', name: 'Admin', type: 'admin' },
+  ...myGroups.map(g => ({ id: g.id, name: g.name, type: 'group' }))
 ];
+
+const initialMessages: { [key: string]: { id: string; senderId: string; text: string; timestamp: string }[]} = {
+    'admin-chat': [
+        { id: 'admin-m1', senderId: 'admin', text: "Please ensure all group proposals are reviewed by the end of the week.", timestamp: "10:30 AM" },
+    ],
+    [myGroups[0]?.id || 'G02']: [
+        { id: 'm1', senderId: 'EB22210006025', text: "Sir Mukesh, we've completed the data collection phase. Ready to move on to model training.", timestamp: "11:00 AM" },
+        { id: 'm2', senderId: 'T01', text: "Excellent work. Please prepare a summary of the dataset and your proposed model architecture.", timestamp: "11:05 AM" },
+        { id: 'm3', senderId: 'EB22210006055', text: "I've updated the UI mockups based on our last discussion.", timestamp: "11:10 AM" },
+    ]
+};
 
 export default function TeacherChatPage() {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState('');
-  
-  const loggedInTeacher = teachers[0];
-  const myGroups = groups.filter((g) => g.supervisorId === loggedInTeacher.id);
+  const [selectedConversationId, setSelectedConversationId] = useState(initialConversations[1]?.id || 'G02');
 
-  const conversations = [
-    { id: 'conv-admin', name: 'Admin', type: 'admin' },
-    ...myGroups.map(g => ({ id: g.id, name: g.name, type: 'group' }))
-  ];
-
-  const selectedConversationId = 'G02'; 
-  const selectedGroup = myGroups.find(g => g.id === selectedConversationId);
-  const groupMembers = students.filter(s => selectedGroup?.memberIds.includes(s.id));
+  const selectedConversation = initialConversations.find(c => c.id === selectedConversationId);
+  const currentMessages = messages[selectedConversationId] || [];
 
   const handleSendMessage = () => {
     if (newMessage.trim() === '') return;
 
     const message = {
-      id: `m${messages.length + 1}`,
+      id: `m${Date.now()}`,
       senderId: loggedInTeacher.id,
       text: newMessage,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    setMessages([...messages, message]);
+    setMessages(prev => ({
+        ...prev,
+        [selectedConversationId]: [...(prev[selectedConversationId] || []), message]
+    }));
     setNewMessage('');
   };
 
@@ -51,6 +58,20 @@ export default function TeacherChatPage() {
       handleSendMessage();
     }
   };
+  
+  const getConversationIcon = (type: string) => {
+    switch (type) {
+        case 'group': return <Users className="h-5 w-5" />;
+        case 'admin': return <Shield className="h-5 w-5" />;
+        default: return <Users className="h-5 w-5" />;
+    }
+  }
+
+  const getAvatarUrl = (id: string) => {
+    const student = students.find(s => s.id === id);
+    if (!student) return undefined;
+    return PlaceHolderImages.find(p => p.id === student.avatar)?.imageUrl;
+  }
 
   return (
     <div className="grid h-[calc(100vh-8rem)] grid-cols-4">
@@ -64,17 +85,17 @@ export default function TeacherChatPage() {
         </div>
         <ScrollArea className="flex-1">
           <div className="space-y-1 p-2">
-            {conversations.map((conv) => (
+            {initialConversations.map((conv) => (
               <button
                 key={conv.id}
+                onClick={() => setSelectedConversationId(conv.id)}
                 className={cn(
                   'flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors',
                    conv.id === selectedConversationId ? 'bg-primary/10 text-primary' : 'hover:bg-muted'
                 )}
               >
                 <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-                    {conv.type === 'group' && <Users className="h-5 w-5" />}
-                    {conv.type === 'admin' && <Shield className="h-5 w-5" />}
+                    {getConversationIcon(conv.type)}
                 </div>
                 <p className="font-semibold">{conv.name}</p>
               </button>
@@ -83,68 +104,75 @@ export default function TeacherChatPage() {
         </ScrollArea>
       </div>
       <div className="col-span-3 flex flex-col">
-        <div className="flex items-center gap-4 border-b p-4">
-           <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center"><Users className="h-5 w-5" /></div>
-          <div>
-            <p className="font-semibold">{selectedGroup?.name}</p>
-            <p className="text-sm text-muted-foreground">{selectedGroup?.projectTitle}</p>
-          </div>
-        </div>
-        <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
-            {messages.map((message) => {
-               const sender = message.senderId === loggedInTeacher.id ? loggedInTeacher : groupMembers.find(m => m.id === message.senderId);
-               const senderAvatar = PlaceHolderImages.find(p => p.id === sender?.avatar);
-               const isYou = message.senderId === loggedInTeacher.id;
-              return (
-              <div
-                key={message.id}
-                className={cn( 'flex items-end gap-2', isYou && 'justify-end' )}
-              >
-                {!isYou && sender && (
-                  <Avatar className="h-8 w-8">
-                     {senderAvatar && <AvatarImage src={senderAvatar.imageUrl} />}
-                    <AvatarFallback>{sender.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                )}
+        {selectedConversation ? (
+        <>
+            <div className="flex items-center gap-4 border-b p-4">
+            <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">{getConversationIcon(selectedConversation.type)}</div>
+            <div>
+                <p className="font-semibold">{selectedConversation.name}</p>
+                {selectedConversation.type === 'group' && <p className="text-sm text-muted-foreground">{myGroups.find(g => g.id === selectedConversation.id)?.projectTitle}</p>}
+            </div>
+            </div>
+            <ScrollArea className="flex-1 p-4">
+            <div className="space-y-4">
+                {currentMessages.map((message) => {
+                const groupMembers = selectedConversation.type === 'group' ? students.filter(s => myGroups.find(g => g.id === selectedConversationId)?.memberIds.includes(s.id)) : [];
+                const sender = message.senderId === loggedInTeacher.id ? loggedInTeacher : groupMembers.find(m => m.id === message.senderId) || { name: 'Admin', id: 'admin', avatar: ''};
+                const senderAvatar = getAvatarUrl(sender.id);
+                const isYou = message.senderId === loggedInTeacher.id;
+                return (
                 <div
-                  className={cn(
-                    'max-w-xs rounded-lg p-3 md:max-w-md',
-                    isYou ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                  )}
+                    key={message.id}
+                    className={cn( 'flex items-end gap-2', isYou && 'justify-end' )}
                 >
-                  {!isYou && <p className="text-xs font-semibold mb-1">{sender?.name}</p>}
-                  <p className="text-sm">{message.text}</p>
-                  <p className="mt-1 text-right text-xs opacity-70">
-                    {message.timestamp}
-                  </p>
+                    {!isYou && sender && (
+                    <Avatar className="h-8 w-8">
+                        {senderAvatar && <AvatarImage src={senderAvatar} />}
+                        <AvatarFallback>{sender.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    )}
+                    <div
+                    className={cn(
+                        'max-w-xs rounded-lg p-3 md:max-w-md',
+                        isYou ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                    )}
+                    >
+                    {!isYou && <p className="text-xs font-semibold mb-1">{sender?.name}</p>}
+                    <p className="text-sm">{message.text}</p>
+                    <p className="mt-1 text-right text-xs opacity-70">
+                        {message.timestamp}
+                    </p>
+                    </div>
                 </div>
-              </div>
-            )})}
-          </div>
-        </ScrollArea>
-        <div className="border-t p-4">
-          <div className="relative">
-            <Input 
-              placeholder="Type your message..." 
-              className="pr-12"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={handleKeyPress}
-            />
-            <Button
-              size="icon"
-              variant="ghost"
-              className="absolute right-1 top-1/2 -translate-y-1/2"
-              onClick={handleSendMessage}
-            >
-              <Send className="h-5 w-5 text-primary" />
-            </Button>
-          </div>
-        </div>
+                )})}
+            </div>
+            </ScrollArea>
+            <div className="border-t p-4">
+            <div className="relative">
+                <Input 
+                placeholder="Type your message..." 
+                className="pr-12"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={handleKeyPress}
+                />
+                <Button
+                size="icon"
+                variant="ghost"
+                className="absolute right-1 top-1/2 -translate-y-1/2"
+                onClick={handleSendMessage}
+                >
+                <Send className="h-5 w-5 text-primary" />
+                </Button>
+            </div>
+            </div>
+        </>
+        ) : (
+            <div className="flex flex-1 items-center justify-center text-muted-foreground">
+                <p>Select a conversation to start chatting.</p>
+            </div>
+        )}
       </div>
     </div>
   );
 }
-
-    

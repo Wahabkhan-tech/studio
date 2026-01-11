@@ -1,48 +1,72 @@
-
 'use client';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { teachers } from '@/lib/data';
+import { teachers, students } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
-import { Search, Send } from 'lucide-react';
+import { Search, Send, Users, Shield, UserCog } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
-const initialMessages = [
-  {
-    id: 'm1',
-    sender: 'You',
-    text: 'Hello Dr. Grant, could you please review the new project guidelines?',
-    timestamp: '10:00 AM',
-  },
-  {
-    id: 'm2',
-    sender: 'Dr. Alan Grant',
-    text: 'Of course. I will take a look this afternoon.',
-    timestamp: '10:02 AM',
-  },
+const initialConversations = [
+  { id: 'all-teachers', name: 'All Teachers', type: 'broadcast-teacher' },
+  { id: 'all-students', name: 'All Students', type: 'broadcast-student' },
+  ...teachers.map(t => ({ id: t.id, name: t.name, type: 'teacher' }))
 ];
 
+const initialMessages: { [key: string]: { id: string; sender: string; text: string; timestamp: string }[]} = {
+    'all-teachers': [
+        { id: 'm1', sender: 'You', text: 'Reminder: Please submit all final grades by Friday.', timestamp: '10:00 AM' },
+    ],
+    'all-students': [],
+    [teachers[0].id]: [
+        { id: 't1-m1', sender: 'You', text: 'Hello Dr. Grant, could you please review the new project guidelines?', timestamp: '10:00 AM' },
+        { id: 't1-m2', sender: 'Dr. Alan Grant', text: 'Of course. I will take a look this afternoon.', timestamp: '10:02 AM' },
+    ]
+};
+
+
 export default function AdminChatPage() {
+  const [conversations, setConversations] = useState(initialConversations);
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState('');
+  const [selectedConversationId, setSelectedConversationId] = useState(initialConversations[0].id);
 
-  const selectedTeacher = teachers[0];
-  const avatar = PlaceHolderImages.find((p) => p.id === selectedTeacher.avatar);
+  const selectedConversation = conversations.find(c => c.id === selectedConversationId);
+  const currentMessages = messages[selectedConversationId] || [];
+
+  let avatarUrl: string | undefined;
+  if (selectedConversation?.type === 'teacher') {
+      const teacher = teachers.find(t => t.id === selectedConversationId);
+      avatarUrl = PlaceHolderImages.find(p => p.id === teacher?.avatar)?.imageUrl;
+  }
 
   const handleSendMessage = () => {
     if (newMessage.trim() === '') return;
 
     const message = {
-      id: `m${messages.length + 1}`,
+      id: `m${Date.now()}`,
       sender: 'You',
       text: newMessage,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    setMessages([...messages, message]);
+    setMessages(prev => ({
+        ...prev,
+        [selectedConversationId]: [...(prev[selectedConversationId] || []), message]
+    }));
     setNewMessage('');
   };
 
@@ -52,6 +76,15 @@ export default function AdminChatPage() {
     }
   };
 
+  const getConversationIcon = (type: string) => {
+    switch (type) {
+        case 'broadcast-teacher': return <UserCog className="h-5 w-5" />;
+        case 'broadcast-student': return <Users className="h-5 w-5" />;
+        case 'teacher': return <UserCog className="h-5 w-5" />;
+        default: return <Users className="h-5 w-5" />;
+    }
+  }
+
   return (
     <div className="grid h-[calc(100vh-8rem)] grid-cols-4">
       <div className="col-span-1 flex flex-col border-r">
@@ -59,38 +92,38 @@ export default function AdminChatPage() {
           <h2 className="text-xl font-bold">Conversations</h2>
           <div className="relative mt-2">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search teachers..." className="pl-8" />
+            <Input placeholder="Search..." className="pl-8" />
           </div>
         </div>
         <ScrollArea className="flex-1">
           <div className="space-y-1 p-2">
-            {teachers.map((teacher) => {
-              const teacherAvatar = PlaceHolderImages.find(
-                (p) => p.id === teacher.avatar
-              );
+            {conversations.map((conv) => {
+              const teacher = conv.type === 'teacher' ? teachers.find(t => t.id === conv.id) : null;
+              const convAvatar = teacher ? PlaceHolderImages.find(p => p.id === teacher.avatar) : null;
               return (
                 <button
-                  key={teacher.id}
+                  key={conv.id}
+                  onClick={() => setSelectedConversationId(conv.id)}
                   className={cn(
                     'flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors',
-                    teacher.id === selectedTeacher.id
+                    conv.id === selectedConversationId
                       ? 'bg-primary/10 text-primary'
                       : 'hover:bg-muted'
                   )}
                 >
                   <Avatar className="h-10 w-10">
-                    {teacherAvatar && (
-                      <AvatarImage src={teacherAvatar.imageUrl} />
-                    )}
+                    {convAvatar && <AvatarImage src={convAvatar.imageUrl} />}
                     <AvatarFallback>
-                      {teacher.name.charAt(0)}
+                        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                            {getConversationIcon(conv.type)}
+                        </div>
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-semibold">{teacher.name}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="font-semibold">{conv.name}</p>
+                    {teacher && <p className="text-xs text-muted-foreground">
                       {teacher.department}
-                    </p>
+                    </p>}
                   </div>
                 </button>
               );
@@ -99,68 +132,80 @@ export default function AdminChatPage() {
         </ScrollArea>
       </div>
       <div className="col-span-3 flex flex-col">
-        <div className="flex items-center gap-4 border-b p-4">
-          <Avatar className="h-10 w-10">
-            {avatar && <AvatarImage src={avatar.imageUrl} />}
-            <AvatarFallback>{selectedTeacher.name.charAt(0)}</AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-semibold">{selectedTeacher.name}</p>
-            <p className="text-sm text-muted-foreground">System-Wide Communication</p>
-          </div>
-        </div>
-        <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={cn(
-                  'flex items-end gap-2',
-                  message.sender === 'You' && 'justify-end'
-                )}
-              >
-                {message.sender !== 'You' && (
-                  <Avatar className="h-8 w-8">
-                     {avatar && <AvatarImage src={avatar.imageUrl} />}
-                    <AvatarFallback>{message.sender.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                )}
-                <div
-                  className={cn(
-                    'max-w-xs rounded-lg p-3 md:max-w-md',
-                    message.sender === 'You'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
-                  )}
-                >
-                  <p className="text-sm">{message.text}</p>
-                  <p className="mt-1 text-right text-xs opacity-70">
-                    {message.timestamp}
-                  </p>
-                </div>
+        {selectedConversation ? (
+          <>
+            <div className="flex items-center gap-4 border-b p-4">
+              <Avatar className="h-10 w-10">
+                 {avatarUrl && <AvatarImage src={avatarUrl} />}
+                <AvatarFallback>
+                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                        {getConversationIcon(selectedConversation.type)}
+                    </div>
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-semibold">{selectedConversation.name}</p>
+                <p className="text-sm text-muted-foreground">System-Wide Communication</p>
               </div>
-            ))}
-          </div>
-        </ScrollArea>
-        <div className="border-t p-4">
-          <div className="relative">
-            <Input 
-              placeholder="Type your message..." 
-              className="pr-12" 
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={handleKeyPress}
-            />
-            <Button
-              size="icon"
-              variant="ghost"
-              className="absolute right-1 top-1/2 -translate-y-1/2"
-              onClick={handleSendMessage}
-            >
-              <Send className="h-5 w-5 text-primary" />
-            </Button>
-          </div>
-        </div>
+            </div>
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-4">
+                {currentMessages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={cn(
+                      'flex items-end gap-2',
+                      message.sender === 'You' && 'justify-end'
+                    )}
+                  >
+                    {message.sender !== 'You' && selectedConversation.type === 'teacher' && (
+                      <Avatar className="h-8 w-8">
+                         {avatarUrl && <AvatarImage src={avatarUrl} />}
+                        <AvatarFallback>{message.sender.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                    )}
+                    <div
+                      className={cn(
+                        'max-w-xs rounded-lg p-3 md:max-w-md',
+                        message.sender === 'You'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted'
+                      )}
+                    >
+                      <p className="text-sm">{message.text}</p>
+                      <p className="mt-1 text-right text-xs opacity-70">
+                        {message.timestamp}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+            <div className="border-t p-4">
+              <div className="relative">
+                <Input 
+                  placeholder="Type your message..." 
+                  className="pr-12" 
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="absolute right-1 top-1/2 -translate-y-1/2"
+                  onClick={handleSendMessage}
+                >
+                  <Send className="h-5 w-5 text-primary" />
+                </Button>
+              </div>
+            </div>
+        </>
+        ) : (
+            <div className="flex flex-1 items-center justify-center text-muted-foreground">
+                <p>Select a conversation to start chatting.</p>
+            </div>
+        )}
       </div>
     </div>
   );
