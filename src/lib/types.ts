@@ -1,16 +1,19 @@
-
 export type Student = {
   id: string;
   name: string;
   email: string;
   registrationNumber: string;
   avatar: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'INACTIVE' | 'GROUPED' | 'PROPOSAL_SUBMITTED' | 'APPROVED';
   semester: number;
   skills: string[];
   interests: string;
   groupPreferences?: string;
-  profileStatus?: "INCOMPLETE" | "PENDING_APPROVAL" | "COMPLETE";
+  profileStatus?: 'INCOMPLETE' | 'PENDING_APPROVAL' | 'COMPLETE';
+  department: string;
+  class: string;
+  section: string;
+  session: string;
 };
 
 export type Teacher = {
@@ -23,10 +26,10 @@ export type Teacher = {
 };
 
 export type Department = {
-    id: string;
-    name: string;
-    head: string;
-}
+  id: string;
+  name: string;
+  head: string;
+};
 
 export type Group = {
   id: string;
@@ -60,9 +63,9 @@ export type Task = {
 };
 
 export type Session = {
-    id: string;
-    title: string;
-    groupId: string;
-    date: string;
-    attendees: string[];
-}
+  id: string;
+  title: string;
+  groupId: string;
+  date: string;
+  attendees: string[];
+};

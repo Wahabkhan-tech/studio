@@ -13,18 +13,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { groups, students as allStudents, sessions as allSessions, teachers } from '@/lib/data';
+import {
+  groups as allGroups,
+  students as allStudents,
+  sessions as allSessions,
+  teachers,
+} from '@/lib/data';
 import { useState } from 'react';
 import { AttendanceTracker } from '@/components/attendance-tracker';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AttendanceManagementPage() {
-  const loggedInTeacherId = teachers[0].id;
-  const teacherGroups = groups.filter((g) => g.supervisorId === loggedInTeacherId);
+  const { toast } = useToast();
+  const loggedInTeacherId = 'T01';
+  const teacherGroups = allGroups.filter((g) => g.supervisorId === loggedInTeacherId);
+
+  // Handle case where teacher has no groups
+  if (teacherGroups.length === 0) {
+    return (
+       <Card>
+        <CardHeader>
+          <CardTitle>Attendance Management</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p>You are not supervising any groups yet.</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
   const [selectedGroupId, setSelectedGroupId] = useState(teacherGroups[0].id);
 
-  const selectedGroup = teacherGroups.find(g => g.id === selectedGroupId)!;
-  const groupMembers = allStudents.filter(s => selectedGroup.memberIds.includes(s.id));
-  const groupSessions = allSessions.filter(s => s.groupId === selectedGroupId);
+  const selectedGroup = teacherGroups.find((g) => g.id === selectedGroupId)!;
+  const groupMembers = allStudents.filter((s) => selectedGroup.memberIds.includes(s.id));
+  const groupSessions = allSessions.filter((s) => s.groupId === selectedGroupId);
+  
+  const handleAttendanceChange = (sessionId: string, studentId: string, isPresent: boolean) => {
+    // This is a simulation. In a real app, you'd send this to a server.
+    toast({
+        title: "Attendance Marked",
+        description: `${allStudents.find(s => s.id === studentId)?.name} marked as ${isPresent ? 'Present' : 'Absent'}.`
+    })
+  }
 
   return (
     <Card>
@@ -37,7 +67,10 @@ export default function AttendanceManagementPage() {
       <CardContent className="space-y-6">
         <div className="flex-1">
           <label className="text-sm font-medium">Group</label>
-          <Select defaultValue={selectedGroupId} onValueChange={setSelectedGroupId}>
+          <Select
+            defaultValue={selectedGroupId}
+            onValueChange={setSelectedGroupId}
+          >
             <SelectTrigger className="w-full md:w-1/2">
               <SelectValue placeholder="Select a group" />
             </SelectTrigger>
@@ -51,14 +84,13 @@ export default function AttendanceManagementPage() {
           </Select>
         </div>
         <AttendanceTracker
-            role="teacher"
-            group={selectedGroup}
-            members={groupMembers}
-            sessions={groupSessions}
+          role="teacher"
+          group={selectedGroup}
+          members={groupMembers}
+          sessions={groupSessions}
+          onAttendanceChange={handleAttendanceChange}
         />
       </CardContent>
     </Card>
   );
 }
-
-    

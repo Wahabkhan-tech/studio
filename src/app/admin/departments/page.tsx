@@ -1,4 +1,5 @@
-
+'use client';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -6,7 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter
+  CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,11 +19,41 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { departments } from '@/lib/data';
+import { departments as initialDepartments } from '@/lib/data';
 import { PlusCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
+import type { Department } from '@/lib/types';
 
 export default function DepartmentManagementPage() {
+  const [departments, setDepartments] = useState<Department[]>(initialDepartments);
+  const [newDeptName, setNewDeptName] = useState('');
+  const [newDeptHead, setNewDeptHead] = useState('');
+  const { toast } = useToast();
+
+  const handleAddDepartment = () => {
+    if (!newDeptName.trim()) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Department name cannot be empty.',
+      });
+      return;
+    }
+    const newDepartment: Department = {
+      id: `dept-${Date.now()}`,
+      name: newDeptName,
+      head: newDeptHead || 'Unassigned',
+    };
+    setDepartments([...departments, newDepartment]);
+    setNewDeptName('');
+    setNewDeptHead('');
+    toast({
+      title: 'Department Created',
+      description: `The "${newDeptName}" department has been added.`,
+    });
+  };
+
   return (
     <div className="grid gap-6 md:grid-cols-5">
       <div className="md:col-span-3">
@@ -46,13 +77,18 @@ export default function DepartmentManagementPage() {
                 {departments.map((dept) => (
                   <TableRow key={dept.id}>
                     <TableCell className="font-medium">
-                      <Link href={`/admin/departments/${dept.id}/teachers`} className="text-primary hover:underline">
+                      <Link
+                        href={`/admin/departments/${dept.id}/teachers`}
+                        className="text-primary hover:underline"
+                      >
                         {dept.name}
                       </Link>
                     </TableCell>
                     <TableCell>{dept.head}</TableCell>
                     <TableCell>
-                      <Button variant="outline" size="sm">Edit</Button>
+                      <Button variant="outline" size="sm">
+                        Edit
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -65,22 +101,30 @@ export default function DepartmentManagementPage() {
         <Card>
           <CardHeader>
             <CardTitle>Create Department</CardTitle>
-            <CardDescription>
-              Add a new academic department.
-            </CardDescription>
+            <CardDescription>Add a new academic department.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="dept-name">Department Name</Label>
-              <Input id="dept-name" placeholder="e.g., Information Technology" />
+              <Input
+                id="dept-name"
+                placeholder="e.g., Information Technology"
+                value={newDeptName}
+                onChange={(e) => setNewDeptName(e.target.value)}
+              />
             </div>
-             <div className="space-y-2">
+            <div className="space-y-2">
               <Label htmlFor="dept-head">Department Head (Optional)</Label>
-              <Input id="dept-head" placeholder="Select a teacher" />
+              <Input
+                id="dept-head"
+                placeholder="Select a teacher"
+                value={newDeptHead}
+                onChange={(e) => setNewDeptHead(e.target.value)}
+              />
             </div>
           </CardContent>
           <CardFooter>
-            <Button className="w-full">
+            <Button className="w-full" onClick={handleAddDepartment}>
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Department
             </Button>
@@ -90,5 +134,3 @@ export default function DepartmentManagementPage() {
     </div>
   );
 }
-
-    

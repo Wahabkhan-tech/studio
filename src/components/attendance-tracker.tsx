@@ -1,4 +1,3 @@
-
 'use client';
 import {
   Table,
@@ -19,38 +18,50 @@ interface AttendanceTrackerProps {
   group: Group;
   sessions: Session[];
   members: Student[];
+  onAttendanceChange?: (sessionId: string, studentId: string, isPresent: boolean) => void;
 }
 
-export function AttendanceTracker({ role, group, sessions, members }: AttendanceTrackerProps) {
+export function AttendanceTracker({
+  role,
+  sessions,
+  members,
+  onAttendanceChange,
+}: AttendanceTrackerProps) {
   // In a real app, attendance state would be managed via a server/database.
   // Here we simulate it with local state for demonstration.
   const [attendance, setAttendance] = useState(() => {
     const initialState: { [sessionId: string]: string[] } = {};
-    sessions.forEach(session => {
-        initialState[session.id] = session.attendees;
+    sessions.forEach((session) => {
+      initialState[session.id] = session.attendees;
     });
     return initialState;
   });
 
-  const handleAttendanceChange = (sessionId: string, studentId: string) => {
+  const handleAttendanceClick = (sessionId: string, studentId: string, markAsPresent: boolean) => {
     if (role !== 'teacher') return;
 
-    setAttendance(prev => {
-        const sessionAttendees = prev[sessionId] ? [...prev[sessionId]] : [];
-        const studentIndex = sessionAttendees.indexOf(studentId);
+    setAttendance((prev) => {
+      const sessionAttendees = prev[sessionId] ? [...prev[sessionId]] : [];
+      const studentIndex = sessionAttendees.indexOf(studentId);
 
-        if (studentIndex > -1) {
-            // Student is present, mark as absent
-            sessionAttendees.splice(studentIndex, 1);
-        } else {
-            // Student is absent, mark as present
-            sessionAttendees.push(studentId);
-        }
+      const isCurrentlyPresent = studentIndex > -1;
 
-        return { ...prev, [sessionId]: sessionAttendees };
+      if (markAsPresent && !isCurrentlyPresent) {
+        sessionAttendees.push(studentId);
+      } else if (!markAsPresent && isCurrentlyPresent) {
+        sessionAttendees.splice(studentIndex, 1);
+      } else {
+        // No change needed
+        return prev;
+      }
+      
+      // Notify parent component of the change
+      onAttendanceChange?.(sessionId, studentId, markAsPresent);
+
+      return { ...prev, [sessionId]: sessionAttendees };
     });
   };
-  
+
   if (sessions.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -94,7 +105,9 @@ export function AttendanceTracker({ role, group, sessions, members }: Attendance
                             size="icon"
                             variant={isPresent ? 'default' : 'outline'}
                             className="h-7 w-7 rounded-full"
-                            onClick={() => handleAttendanceChange(session.id, member.id)}
+                            onClick={() =>
+                              handleAttendanceClick(session.id, member.id, true)
+                            }
                           >
                             P
                           </Button>
@@ -102,7 +115,9 @@ export function AttendanceTracker({ role, group, sessions, members }: Attendance
                             size="icon"
                             variant={!isPresent ? 'destructive' : 'outline'}
                             className="h-7 w-7 rounded-full"
-                             onClick={() => handleAttendanceChange(session.id, member.id)}
+                            onClick={() =>
+                              handleAttendanceClick(session.id, member.id, false)
+                            }
                           >
                             A
                           </Button>
