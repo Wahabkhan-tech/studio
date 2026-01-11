@@ -1,4 +1,5 @@
 
+
 import Link from 'next/link';
 import {
   Book,
@@ -125,7 +126,7 @@ export default function StudentLayout({
                       <span className="sr-only">Sessions</span>
                     </Link>
                   ) : (
-                    renderLockedItem(<Lock className="h-5 w-5" />, "Sessions")
+                     renderLockedItem(<Lock className="h-5 w-5" />, "Sessions")
                   )}
                 </TooltipTrigger>
                 <TooltipContent side="right">{isProfileComplete ? "Sessions" : lockedTooltip}</TooltipContent>
@@ -142,7 +143,7 @@ export default function StudentLayout({
                       <span className="sr-only">Chat</span>
                     </Link>
                   ) : (
-                    renderLockedItem(<Lock className="h-5 w-5" />, "Chat")
+                     renderLockedItem(<Lock className="h-5 w-5" />, "Chat")
                   )}
                 </TooltipTrigger>
                 <TooltipContent side="right">{isProfileComplete ? "Chat" : lockedTooltip}</TooltipContent>
