@@ -43,11 +43,20 @@ export default function StudentLayout({
   const myGroup = groups.find((g) => g.memberIds.includes(loggedInStudent.id));
   const isProfileComplete = myGroup?.proposal.status === 'APPROVED';
   
-  if (!isProfileComplete && pathname !== '/student/onboarding' && pathname !== '/student/profile') {
+  if (!isProfileComplete && pathname !== '/student/onboarding' && pathname !== '/student/profile' && pathname !== '/student/groups') {
     redirect('/student/onboarding');
   }
 
   const lockedTooltip = "Complete onboarding to unlock.";
+
+  const renderLockedItem = (icon: React.ReactNode, label: string) => (
+    <span
+      className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", "cursor-not-allowed opacity-50")}
+    >
+      {icon}
+      <span className="sr-only">{label}</span>
+    </span>
+  );
 
   return (
     <SidebarProvider>
@@ -90,39 +99,51 @@ export default function StudentLayout({
               
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
-                    href={isProfileComplete ? "/student/tasks" : "#"}
-                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", isProfileComplete ? "hover:text-foreground" : "cursor-not-allowed opacity-50")}
-                  >
-                    {isProfileComplete ? <ClipboardList className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
-                    <span className="sr-only">Tasks</span>
-                  </Link>
+                  {isProfileComplete ? (
+                    <Link
+                      href="/student/tasks"
+                      className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                    >
+                      <ClipboardList className="h-5 w-5" />
+                      <span className="sr-only">Tasks</span>
+                    </Link>
+                  ) : (
+                    renderLockedItem(<Lock className="h-5 w-5" />, "Tasks")
+                  )}
                 </TooltipTrigger>
                 <TooltipContent side="right">{isProfileComplete ? "Tasks" : lockedTooltip}</TooltipContent>
               </Tooltip>
 
                <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
-                    href={isProfileComplete ? "/student/sessions" : "#"}
-                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", isProfileComplete ? "hover:text-foreground" : "cursor-not-allowed opacity-50")}
-                  >
-                    {isProfileComplete ? <Users className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
-                    <span className="sr-only">Sessions</span>
-                  </Link>
+                  {isProfileComplete ? (
+                    <Link
+                      href="/student/sessions"
+                      className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                    >
+                      <Users className="h-5 w-5" />
+                      <span className="sr-only">Sessions</span>
+                    </Link>
+                  ) : (
+                    renderLockedItem(<Lock className="h-5 w-5" />, "Sessions")
+                  )}
                 </TooltipTrigger>
                 <TooltipContent side="right">{isProfileComplete ? "Sessions" : lockedTooltip}</TooltipContent>
               </Tooltip>
 
                <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
-                    href={isProfileComplete ? "/student/chat" : "#"}
-                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", isProfileComplete ? "hover:text-foreground" : "cursor-not-allowed opacity-50")}
-                  >
-                    {isProfileComplete ? <MessageSquare className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
-                    <span className="sr-only">Chat</span>
-                  </Link>
+                  {isProfileComplete ? (
+                    <Link
+                      href="/student/chat"
+                      className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                    >
+                      <MessageSquare className="h-5 w-5" />
+                      <span className="sr-only">Chat</span>
+                    </Link>
+                  ) : (
+                    renderLockedItem(<Lock className="h-5 w-5" />, "Chat")
+                  )}
                 </TooltipTrigger>
                 <TooltipContent side="right">{isProfileComplete ? "Chat" : lockedTooltip}</TooltipContent>
               </Tooltip>

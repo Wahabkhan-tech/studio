@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Breadcrumb,
@@ -57,6 +58,15 @@ export function Header({ role }: HeaderProps) {
     );
   });
 
+  const renderMobileLockedItem = (icon: React.ReactNode, label: string) => (
+    <span
+      className={cn("flex items-center gap-4 px-2.5", "text-muted-foreground/50 cursor-not-allowed")}
+    >
+      {icon}
+      {label}
+    </span>
+  );
+
   const adminNav = (
     <>
       <Link href="/admin/dashboard" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Home className="h-5 w-5" />Dashboard</Link>
@@ -88,13 +98,25 @@ export function Header({ role }: HeaderProps) {
   const studentNav = (
     <>
        <Link href={isProfileComplete ? "/student/dashboard" : "/student/onboarding"} className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Home className="h-5 w-5" />Dashboard</Link>
-      <Link href={myGroup ? `/student/groups/${myGroup?.id}` : "/student/groups"} className={cn("flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground", isProfileComplete ? "hover:text-foreground" : "")}>
-         {isProfileComplete ? <Package className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+      <Link href={myGroup ? `/student/groups/${myGroup?.id}` : "/student/groups"} className={cn("flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground")}>
+         {myGroup ? <Package className="h-5 w-5" /> : <Search className="h-5 w-5" />}
         {myGroup ? "My Group" : "Find Group"}
       </Link>
-      <Link href={isProfileComplete ? "/student/tasks" : "#"} className={cn("flex items-center gap-4 px-2.5", isProfileComplete ? "text-muted-foreground hover:text-foreground" : "text-muted-foreground/50 cursor-not-allowed")}><ClipboardList className="h-5 w-5" />Tasks</Link>
-      <Link href={isProfileComplete ? "/student/sessions" : "#"} className={cn("flex items-center gap-4 px-2.5", isProfileComplete ? "text-muted-foreground hover:text-foreground" : "text-muted-foreground/50 cursor-not-allowed")}><Users className="h-5 w-5" />Sessions</Link>
-      <Link href={isProfileComplete ? "/student/chat" : "#"} className={cn("flex items-center gap-4 px-2.5", isProfileComplete ? "text-muted-foreground hover:text-foreground" : "text-muted-foreground/50 cursor-not-allowed")}><MessageSquare className="h-5 w-5" />Chat</Link>
+      {isProfileComplete ? (
+        <Link href="/student/tasks" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><ClipboardList className="h-5 w-5" />Tasks</Link>
+      ) : (
+        renderMobileLockedItem(<Lock className="h-5 w-5" />, "Tasks")
+      )}
+      {isProfileComplete ? (
+        <Link href="/student/sessions" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Users className="h-5 w-5" />Sessions</Link>
+      ) : (
+        renderMobileLockedItem(<Lock className="h-5 w-5" />, "Sessions")
+      )}
+      {isProfileComplete ? (
+        <Link href="/student/chat" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><MessageSquare className="h-5 w-5" />Chat</Link>
+      ) : (
+        renderMobileLockedItem(<Lock className="h-5 w-5" />, "Chat")
+      )}
       <Link href="/student/profile" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><User className="h-5 w-5" />Profile</Link>
     </>
   );
