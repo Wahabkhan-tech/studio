@@ -56,6 +56,15 @@ export default function OnboardingPage() {
     });
     goToNextStep();
   }
+  
+  const handleGroupCreation = () => {
+    toast({
+        title: "Group Created!",
+        description: "Your new group has been formed. Now, submit your proposal.",
+    });
+    goToNextStep();
+  }
+
 
   const handleProposalSubmission = () => {
      toast({
@@ -66,7 +75,7 @@ export default function OnboardingPage() {
   }
 
   const availableGroups = groups.filter(g => g.id !== 'g3'); // exclude completed
-  const unassignedStudents = students.filter(s => s.id !== 's1' && s.id !== 's2' && s.id !== 's4');
+  const unassignedStudents = students.filter(s => !groups.some(g => g.memberIds.includes(s.id)));
 
 
   return (
@@ -168,7 +177,7 @@ export default function OnboardingPage() {
                         </SelectContent>
                     </Select>
                 </div>
-                <Button className='w-full' onClick={goToNextStep}><UserPlus className="mr-2 h-4 w-4" />Create Group & Proceed</Button>
+                <Button className='w-full' onClick={handleGroupCreation}><UserPlus className="mr-2 h-4 w-4" />Create Group & Proceed</Button>
               </div>
             </CardContent>
           </Card>

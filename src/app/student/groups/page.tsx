@@ -5,10 +5,18 @@ import GroupSuggestionForm from './_components/group-suggestion-form';
 import { groups, teachers } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 export default function FindGroupPage() {
-
+    const { toast } = useToast();
     const availableGroups = groups.filter(g => g.status !== 'COMPLETED');
+
+    const handleRequestToJoin = (groupName: string) => {
+        toast({
+            title: "Request Sent!",
+            description: `Your request to join "${groupName}" has been sent to the group leader.`,
+        });
+    }
 
     return (
         <div className="grid md:grid-cols-3 gap-8">
@@ -39,7 +47,7 @@ export default function FindGroupPage() {
                                         </p>
                                     </CardContent>
                                     <CardContent>
-                                        <Button className="w-full">Request to Join</Button>
+                                        <Button className="w-full" onClick={() => handleRequestToJoin(group.name)}>Request to Join</Button>
                                     </CardContent>
                                 </Card>
                             )

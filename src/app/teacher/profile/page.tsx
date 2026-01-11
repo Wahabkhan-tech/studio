@@ -1,3 +1,5 @@
+
+'use client';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -13,10 +15,19 @@ import { teachers } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 export default function TeacherProfilePage() {
+  const { toast } = useToast();
   const teacher = teachers[0];
   const avatar = PlaceHolderImages.find((p) => p.id === teacher.avatar);
+
+  const handleSaveChanges = () => {
+    toast({
+        title: "Profile Updated",
+        description: "Your profile information has been successfully saved.",
+    });
+  }
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -78,7 +89,7 @@ export default function TeacherProfilePage() {
         </div>
 
         <div className="flex justify-end">
-          <Button>Save Changes</Button>
+          <Button onClick={handleSaveChanges}>Save Changes</Button>
         </div>
       </CardContent>
     </Card>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -12,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   skills: z.string().min(3, "Please list at least one skill."),
@@ -24,6 +26,7 @@ export default function GroupSuggestionForm() {
   const [suggestions, setSuggestions] = useState<SuggestGroupsOutput>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -64,6 +67,13 @@ export default function GroupSuggestionForm() {
       setIsLoading(false);
     }
   };
+  
+  const handleRequestToJoin = (groupName: string) => {
+    toast({
+        title: "Request Sent!",
+        description: `Your request to join "${groupName}" has been sent to the group leader.`,
+    });
+  }
 
   return (
     <div>
@@ -116,7 +126,7 @@ export default function GroupSuggestionForm() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button className="w-full">Request to Join</Button>
+                    <Button className="w-full" onClick={() => handleRequestToJoin(group.name)}>Request to Join</Button>
                 </CardFooter>
               </Card>
             );
