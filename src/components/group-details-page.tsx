@@ -8,14 +8,14 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { Group, Student, Teacher, UserRole } from '@/lib/types';
+import type { Group, Student, Teacher, UserRole, Task } from '@/lib/types';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { Check, FileText, Send, PlusCircle, X, Pencil } from 'lucide-react';
+import { Check, FileText, Send, PlusCircle, X } from 'lucide-react';
 import Link from 'next/link';
 import {
   tasks as allTasks,
@@ -52,6 +52,8 @@ import {
 import { Slider } from './ui/slider';
 import { ScrollArea, ScrollBar } from './ui/scroll-area';
 import { AttendanceTracker } from './attendance-tracker';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 interface GroupDetailsPageProps {
   role: UserRole;
@@ -62,15 +64,66 @@ interface GroupDetailsPageProps {
 
 export function GroupDetailsPage({
   role,
-  group,
+  group: initialGroup,
   supervisor,
   members,
 }: GroupDetailsPageProps) {
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'overview';
-  const groupTasks = allTasks.slice(0, 3); // Demo tasks
+  
+  const [group, setGroup] = useState<Group>(initialGroup);
+  const [groupTasks, setGroupTasks] = useState<Task[]>(allTasks.filter(t => group.memberIds.includes(t.assignedTo)));
+  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  const [feedbackComment, setFeedbackComment] = useState('Great progress on the initial model training. The accuracy is promising. For next week, please focus on preparing the dataset for the next phase and document the model architecture clearly.');
+  const [progressValue, setProgressValue] = useState(group.progress);
+
+  const { toast } = useToast();
+
   const loggedInStudent = allStudents[0];
   const groupSessions = allSessions.filter((s) => s.groupId === group.id);
+
+  const handleCreateTask = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const newTask: Task = {
+        id: `task-${Date.now()}`,
+        title: formData.get('task-title') as string,
+        assignedTo: formData.get('task-student') as string,
+        dueDate: formData.get('task-due-date') as string,
+        status: 'To Do',
+    }
+
+    setGroupTasks([newTask, ...groupTasks]);
+    setIsTaskDialogOpen(false);
+    toast({
+        title: "Task Created!",
+        description: `Assigned "${newTask.title}" to ${members.find(s=> s.id === newTask.assignedTo)?.name}.`
+    })
+  };
+
+  const handleTaskStatusChange = (taskId: string, status: Task['status']) => {
+    setGroupTasks(groupTasks.map(t => t.id === taskId ? {...t, status} : t));
+    toast({
+        title: 'Task Submitted',
+        description: 'Your supervisor has been notified for review.'
+    })
+  };
+
+  const handleReviewClick = (task: Task) => {
+    setSelectedTask(task);
+    setIsReviewDialogOpen(true);
+  }
+
+  const handleSubmitEvaluation = () => {
+    setGroup(prevGroup => ({...prevGroup, progress: progressValue}));
+    toast({
+        title: "Evaluation Submitted",
+        description: `Progress for ${group.name} has been updated to ${progressValue}%.`
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -177,7 +230,7 @@ export function GroupDetailsPage({
                         className="flex items-center gap-4 p-2 rounded-lg"
                       >
                         <Avatar className="h-12 w-12">
-                          <AvatarImage src={avatar?.imageUrl} />
+                          {avatar && <AvatarImage src={avatar.imageUrl} />}
                           <AvatarFallback>
                             {member.name.charAt(0)}
                           </AvatarFallback>
@@ -261,7 +314,7 @@ export function GroupDetailsPage({
               <CardTitle>Task Management</CardTitle>
               {(role === 'teacher' ||
                 (role === 'student' && group.leaderId === loggedInStudent.id)) && (
-                <Dialog>
+                <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
                   <DialogTrigger asChild>
                     <Button size="sm" className="gap-1">
                       <PlusCircle className="h-3.5 w-3.5" />
@@ -277,37 +330,41 @@ export function GroupDetailsPage({
                         Assign a new task to a group member.
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="task-title">Task Title</Label>
-                        <Input
-                          id="task-title"
-                          placeholder="e.g., Implement user authentication"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="task-student">Assign To</Label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a student" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {members.map((s) => (
-                              <SelectItem key={s.id} value={s.id}>
-                                {s.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="task-due-date">Due Date</Label>
-                        <Input id="task-due-date" type="date" />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button type="submit">Add Task</Button>
-                    </DialogFooter>
+                    <form onSubmit={handleCreateTask}>
+                        <div className="grid gap-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="task-title">Task Title</Label>
+                            <Input
+                            id="task-title"
+                            name="task-title"
+                            placeholder="e.g., Implement user authentication"
+                            required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="task-student">Assign To</Label>
+                            <Select name="task-student" required>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a student" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {members.map((s) => (
+                                <SelectItem key={s.id} value={s.id}>
+                                    {s.name}
+                                </SelectItem>
+                                ))}
+                            </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="task-due-date">Due Date</Label>
+                            <Input id="task-due-date" name="task-due-date" type="date" required/>
+                        </div>
+                        </div>
+                        <DialogFooter>
+                        <Button type="submit">Add Task</Button>
+                        </DialogFooter>
+                    </form>
                   </DialogContent>
                 </Dialog>
               )}
@@ -352,13 +409,13 @@ export function GroupDetailsPage({
                           <TableCell className="text-right">
                             {task.assignedTo === loggedInStudent.id &&
                               task.status !== 'Done' && (
-                                <Button size="sm">Submit</Button>
+                                <Button size="sm" onClick={() => handleTaskStatusChange(task.id, 'Done')}>Submit</Button>
                               )}
                           </TableCell>
                         )}
                         {role === 'teacher' && (
                           <TableCell className="text-right">
-                            <Button size="sm" variant="outline">
+                            <Button size="sm" variant="outline" onClick={() => handleReviewClick(task)}>
                               View
                             </Button>
                           </TableCell>
@@ -366,6 +423,13 @@ export function GroupDetailsPage({
                       </TableRow>
                     );
                   })}
+                   {groupTasks.length === 0 && (
+                        <TableRow>
+                            <TableCell colSpan={4} className="text-center h-24">
+                                No tasks created for this group yet.
+                            </TableCell>
+                        </TableRow>
+                    )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -383,7 +447,7 @@ export function GroupDetailsPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {role === 'teacher' ? (
+              {role === 'teacher' || role === 'admin' ? (
                 <>
                   <div className="space-y-2">
                     <Label htmlFor="feedback-comment">
@@ -393,35 +457,35 @@ export function GroupDetailsPage({
                       id="feedback-comment"
                       placeholder="Enter your feedback on the group's progress this week..."
                       rows={5}
+                      value={feedbackComment}
+                      onChange={(e) => setFeedbackComment(e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="progress-slider">
-                      Set Project Progress ({group.progress}%)
+                      Set Project Progress ({progressValue}%)
                     </Label>
                     <Slider
                       id="progress-slider"
-                      defaultValue={[group.progress]}
+                      defaultValue={[progressValue]}
                       max={100}
                       step={5}
+                      onValueChange={(value) => setProgressValue(value[0])}
                     />
                   </div>
                   <div className="flex justify-end">
-                    <Button>Submit Evaluation</Button>
+                    <Button onClick={handleSubmitEvaluation}>Submit Evaluation</Button>
                   </div>
                 </>
               ) : (
                 <div>
                   <h4 className="font-semibold text-lg">Latest Feedback</h4>
                   <p className="text-sm text-muted-foreground mb-4">
-                    From {supervisor?.name} on July 24, 2024
+                    From {supervisor?.name} on {new Date().toLocaleDateString()}
                   </p>
                   <div className="p-4 bg-muted/50 rounded-lg border">
                     <p>
-                      Great progress on the initial model training. The
-                      accuracy is promising. For next week, please focus on
-                      preparing the dataset for the next phase and document the
-                      model architecture clearly.
+                      {feedbackComment}
                     </p>
                   </div>
                 </div>
@@ -449,6 +513,33 @@ export function GroupDetailsPage({
           </Card>
         </TabsContent>
       </Tabs>
+      
+      <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Review Task: {selectedTask?.title}</DialogTitle>
+                <DialogDescription>
+                    Submitted by {members.find(m => m.id === selectedTask?.assignedTo)?.name}
+                </DialogDescription>
+            </DialogHeader>
+            <div className='py-4 space-y-4'>
+                <p className='text-sm text-muted-foreground'>This is a placeholder for the submitted file or content. In a real application, you would see the student's work here.</p>
+                <div className='p-4 border rounded-md bg-muted/50 h-32'>
+                    <FileText className='mx-auto text-muted-foreground'/>
+                </div>
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsReviewDialogOpen(false)}>Request Revisions</Button>
+                <Button onClick={() => {
+                    toast({title: "Task Approved!", description: `The submission for "${selectedTask?.title}" has been marked as complete.`});
+                    setIsReviewDialogOpen(false);
+                }}>
+                    Approve & Close Task
+                </Button>
+            </DialogFooter>
+          </DialogContent>
+      </Dialog>
     </div>
   );
-}
+
+    
