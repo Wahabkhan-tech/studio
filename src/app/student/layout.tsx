@@ -10,6 +10,7 @@ import {
   Users,
   ShieldQuestion,
   Lock,
+  Search,
 } from 'lucide-react';
 
 import {
@@ -70,14 +71,14 @@ export default function StudentLayout({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    href={isProfileComplete ? `/student/groups/${myGroup?.id}` : "#"}
-                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", isProfileComplete ? "hover:text-foreground" : "cursor-not-allowed opacity-50")}
+                    href={myGroup ? `/student/groups/${myGroup?.id}` : "/student/groups"}
+                    className={cn("flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors md:h-8 md:w-8", isProfileComplete ? "hover:text-foreground" : "")}
                   >
-                    {isProfileComplete ? <Package className="h-5 w-5" /> : <Lock className="h-5 w-5" />}
-                    <span className="sr-only">My Group</span>
+                    {isProfileComplete ? <Package className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+                    <span className="sr-only">{myGroup ? "My Group" : "Find Group"}</span>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent side="right">{isProfileComplete ? "My Group" : lockedTooltip}</TooltipContent>
+                <TooltipContent side="right">{myGroup ? "My Group" : "Find Group"}</TooltipContent>
               </Tooltip>
               
               <Tooltip>
@@ -147,5 +148,3 @@ export default function StudentLayout({
     </SidebarProvider>
   );
 }
-
-    

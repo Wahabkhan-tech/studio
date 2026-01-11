@@ -13,7 +13,9 @@ import Link from 'next/link';
 import { Fragment } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
-import { Home, Package, Users, Building, Book, LineChart, Cog, UserCog, ClipboardList, CalendarCheck, PanelLeft, PlusCircle, User, MessageSquare, FilePen } from 'lucide-react';
+import { Home, Package, Users, Building, Book, LineChart, Cog, UserCog, ClipboardList, CalendarCheck, PanelLeft, Search, User, MessageSquare, FilePen, Lock } from 'lucide-react';
+import { groups, students } from '@/lib/data';
+import { cn } from '@/lib/utils';
 
 type HeaderProps = {
   role: 'admin' | 'teacher' | 'student';
@@ -23,10 +25,20 @@ export function Header({ role }: HeaderProps) {
   const pathname = usePathname();
   const segments = pathname.split('/').filter(Boolean);
 
+  // In a real app, this data would come from auth/session state.
+  const loggedInStudent = students[0];
+  const myGroup = groups.find((g) => g.memberIds.includes(loggedInStudent.id));
+  const isProfileComplete = myGroup?.proposal.status === 'APPROVED';
+
   const breadcrumbItems = segments.map((segment, index) => {
     const href = '/' + segments.slice(0, index + 1).join('/');
     const isLast = index === segments.length - 1;
-    const label = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
+    let label = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
+
+    if (segment === myGroup?.id) {
+        label = myGroup?.name || label;
+    }
+
 
     return (
       <Fragment key={href}>
@@ -74,14 +86,14 @@ export function Header({ role }: HeaderProps) {
 
   const studentNav = (
     <>
-      <Link href="/student/dashboard" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Home className="h-5 w-5" />Dashboard</Link>
-      <Link href="/student/groups/g2" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Package className="h-5 w-5" />My Group</Link>
-      <Link href="/student/groups/create" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><PlusCircle className="h-5 w-5" />Create Group</Link>
-      <Link href="/student/groups/join" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Users className="h-5 w-5" />Join Group</Link>
-      <Link href="/student/groups/proposal" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Book className="h-5 w-5" />Proposal</Link>
-      <Link href="/student/tasks" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><ClipboardList className="h-5 w-5" />Tasks</Link>
-      <Link href="/student/sessions" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Users className="h-5 w-5" />Sessions</Link>
-      <Link href="/student/chat" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><MessageSquare className="h-5 w-5" />Chat</Link>
+       <Link href={isProfileComplete ? "/student/dashboard" : "/student/onboarding"} className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><Home className="h-5 w-5" />Dashboard</Link>
+      <Link href={myGroup ? `/student/groups/${myGroup?.id}` : "/student/groups"} className={cn("flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground", isProfileComplete ? "hover:text-foreground" : "")}>
+         {isProfileComplete ? <Package className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+        {myGroup ? "My Group" : "Find Group"}
+      </Link>
+      <Link href={isProfileComplete ? "/student/tasks" : "#"} className={cn("flex items-center gap-4 px-2.5", isProfileComplete ? "text-muted-foreground hover:text-foreground" : "text-muted-foreground/50 cursor-not-allowed")}><ClipboardList className="h-5 w-5" />Tasks</Link>
+      <Link href={isProfileComplete ? "/student/sessions" : "#"} className={cn("flex items-center gap-4 px-2.5", isProfileComplete ? "text-muted-foreground hover:text-foreground" : "text-muted-foreground/50 cursor-not-allowed")}><Users className="h-5 w-5" />Sessions</Link>
+      <Link href={isProfileComplete ? "/student/chat" : "#"} className={cn("flex items-center gap-4 px-2.5", isProfileComplete ? "text-muted-foreground hover:text-foreground" : "text-muted-foreground/50 cursor-not-allowed")}><MessageSquare className="h-5 w-5" />Chat</Link>
       <Link href="/student/profile" className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"><User className="h-5 w-5" />Profile</Link>
     </>
   );
