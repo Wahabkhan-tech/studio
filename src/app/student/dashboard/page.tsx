@@ -1,5 +1,6 @@
 
 
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,31 +13,17 @@ import { Progress } from '@/components/ui/progress';
 import { groups, students } from '@/lib/data';
 import { Book, Package, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export default function StudentDashboard() {
   // Assuming the logged in student is the first one in the list for demonstration.
   const loggedInStudent = students[0];
   const myGroup = groups.find((g) => g.memberIds.includes(loggedInStudent.id));
   
-  // In a real app, this status would determine if the user sees the dashboard or is redirected to onboarding
-  const profileStatus = myGroup?.proposal.status === 'APPROVED' ? 'COMPLETE' : 'INCOMPLETE';
-
-  if (profileStatus !== 'COMPLETE' || !myGroup) {
-      return (
-         <Card>
-            <CardHeader>
-                <CardTitle>Welcome to Protracks</CardTitle>
-                <CardDescription>
-                    Please complete the onboarding process to access your dashboard and project tools.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Button asChild>
-                    <Link href="/student/onboarding">Start Onboarding</Link>
-                </Button>
-            </CardContent>
-         </Card>
-      )
+  // In a real app, this status would determine if the user sees the dashboard or is redirected to onboarding.
+  // This logic is now handled in the layout.tsx file to prevent redirect loops.
+  if (!myGroup || myGroup.proposal.status !== 'APPROVED') {
+    redirect('/student/onboarding');
   }
   
   return (
