@@ -1,3 +1,4 @@
+
 export type Student = {
   id: string;
   name: string;
@@ -31,6 +32,12 @@ export type Department = {
   head: string;
 };
 
+export type Evaluation = {
+  comment: string;
+  progress: number;
+  date: string;
+};
+
 export type Group = {
   id: string;
   name: string;
@@ -50,6 +57,7 @@ export type Group = {
   progress: number;
   description: string;
   techStack: string[];
+  evaluationHistory: Evaluation[];
 };
 
 export type UserRole = 'admin' | 'teacher' | 'student';

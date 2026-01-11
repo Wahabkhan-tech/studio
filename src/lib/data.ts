@@ -1,13 +1,10 @@
+
 import type { Student, Teacher, Group, Task, Department, Session } from './types';
 
-// New Mock Data Integration
-
-// 1. Departments
 export const departments: Department[] = [
   { id: 'cs', name: 'Computer Science', head: 'Sir Mukesh' },
 ];
 
-// 2. Teachers
 export const teachers: Teacher[] = [
   {
     id: 'T01',
@@ -255,36 +252,38 @@ const allGroupsRaw = [
   }
 ];
 
-// 3. Students (Flattened from groups)
 export const students: Student[] = allGroupsRaw.flatMap((group, gIndex) =>
   group.students.map((student, sIndex) => ({
-    id: student.seatNo, // Use seatNo as the unique ID
+    id: student.seatNo,
     name: student.name,
     email: student.email,
     registrationNumber: student.seatNo,
-    avatar: `${gIndex + 1}${sIndex + 1}`, // Create a simple unique avatar ID
-    status: 'ACTIVE', // Default status
+    avatar: `${gIndex + 1}${sIndex + 1}`,
+    status: 'ACTIVE',
     semester: 8,
-    skills: ['React', 'Node.js', 'Firebase'], // Default skills
-    interests: 'Interested in building full-stack web applications.', // Default interests
+    skills: ['React', 'Node.js', 'Firebase'],
+    interests: 'Interested in building full-stack web applications.',
+    department: 'Computer Science',
+    class: 'BSCS',
+    section: 'A',
+    session: '2024',
   }))
 );
 
-// 4. Groups (Processed for application use)
 export const groups: Group[] = allGroupsRaw.map((group, index) => {
   const supervisor = teachers.find(t => t.name === group.teacher);
   const memberIds = group.students.map(s => s.seatNo);
   const projectTitle = `FYP Title for ${group.groupName}`;
   const description = `This is the project description for ${projectTitle}. It involves complex problem-solving and innovative technology.`;
   const techStack = ['React', 'Next.js', 'Tailwind CSS'];
-  const progress = Math.floor(Math.random() * 80) + 10; // Random progress between 10 and 90
+  const progress = Math.floor(Math.random() * 80) + 10;
 
   return {
     id: group.groupId,
     name: group.groupName,
     projectTitle: projectTitle,
     status: progress === 100 ? 'COMPLETED' : progress > 10 ? 'ACTIVE' : 'PENDING',
-    leaderId: memberIds[0], // Assign first student as leader
+    leaderId: memberIds[0],
     memberIds: memberIds,
     supervisorId: supervisor?.id || 'T01',
     proposal: {
@@ -297,10 +296,21 @@ export const groups: Group[] = allGroupsRaw.map((group, index) => {
     progress: progress,
     description: description,
     techStack: techStack,
+    evaluationHistory: [
+      {
+        comment: 'Great progress on the initial model training. The accuracy is promising.',
+        progress: 25,
+        date: '2024-07-15'
+      },
+      {
+        comment: 'The frontend UI is looking clean, but we need to work on the responsiveness for mobile devices.',
+        progress: 15,
+        date: '2024-07-08'
+      }
+    ],
   };
 });
 
-// 5. Tasks
 export const tasks: Task[] = [
     { id: 'task-1', title: 'Setup project boilerplate', assignedTo: 'EB22210006139', status: 'Done', dueDate: '2024-06-10' },
     { id: 'task-2', title: 'Design database schema', assignedTo: 'EB22210006137', status: 'In Progress', dueDate: '2024-06-15' },
@@ -309,12 +319,9 @@ export const tasks: Task[] = [
     { id: 'task-5', title: 'Train initial ML model', assignedTo: 'EB22210006117', status: 'In Progress', dueDate: '2024-06-18' },
 ];
 
-// 6. Sessions
 export const sessions: Session[] = [
     { id: 'ses1', title: 'Weekly Sync', groupId: 'G01', date: '2024-07-25', attendees: ['EB22210006139', 'EB22210006137'] },
     { id: 'ses2', title: 'Proposal Discussion', groupId: 'G02', date: '2024-07-26', attendees: ['EB22210006025'] },
     { id: 'ses3', title: 'Initial Kick-off', groupId: 'G01', date: '2024-07-18', attendees: ['EB22210006139', 'EB22210006137', 'EB22210006061', 'EB22210006127'] },
     { id: 'ses4', title: 'Mid-Project Review', groupId: 'G06', date: '2024-08-01', attendees: ['EB22210006131'] },
 ];
-
-    

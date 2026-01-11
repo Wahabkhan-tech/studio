@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { Group, Student, Teacher, UserRole, Task } from '@/lib/types';
+import type { Group, Student, Teacher, UserRole, Task, Evaluation } from '@/lib/types';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -77,7 +77,7 @@ export function GroupDetailsPage({
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-  const [feedbackComment, setFeedbackComment] = useState('Great progress on the initial model training. The accuracy is promising. For next week, please focus on preparing the dataset for the next phase and document the model architecture clearly.');
+  const [newFeedbackComment, setNewFeedbackComment] = useState('');
   const [progressValue, setProgressValue] = useState(group.progress);
 
   const { toast } = useToast();
@@ -118,7 +118,20 @@ export function GroupDetailsPage({
   }
 
   const handleSubmitEvaluation = () => {
-    setGroup(prevGroup => ({...prevGroup, progress: progressValue}));
+    const newEvaluation: Evaluation = {
+      comment: newFeedbackComment,
+      progress: progressValue,
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    setGroup(prevGroup => ({
+      ...prevGroup,
+      progress: progressValue,
+      evaluationHistory: [newEvaluation, ...prevGroup.evaluationHistory]
+    }));
+
+    setNewFeedbackComment('');
+
     toast({
         title: "Evaluation Submitted",
         description: `Progress for ${group.name} has been updated to ${progressValue}%.`
@@ -437,61 +450,91 @@ export function GroupDetailsPage({
         </TabsContent>
 
         <TabsContent value="evaluation">
-          <Card>
-            <CardHeader>
-              <CardTitle>Weekly Evaluation</CardTitle>
-              <CardDescription>
-                {role === 'teacher'
-                  ? "Provide weekly feedback and update the project's progress."
-                  : 'View the latest feedback from your supervisor.'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {role === 'teacher' || role === 'admin' ? (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="feedback-comment">
-                      This Week's Comments
-                    </Label>
-                    <Textarea
-                      id="feedback-comment"
-                      placeholder="Enter your feedback on the group's progress this week..."
-                      rows={5}
-                      value={feedbackComment}
-                      onChange={(e) => setFeedbackComment(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="progress-slider">
-                      Set Project Progress ({progressValue}%)
-                    </Label>
-                    <Slider
-                      id="progress-slider"
-                      defaultValue={[progressValue]}
-                      max={100}
-                      step={5}
-                      onValueChange={(value) => setProgressValue(value[0])}
-                    />
-                  </div>
-                  <div className="flex justify-end">
-                    <Button onClick={handleSubmitEvaluation}>Submit Evaluation</Button>
-                  </div>
-                </>
-              ) : (
-                <div>
-                  <h4 className="font-semibold text-lg">Latest Feedback</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    From {supervisor?.name} on {new Date().toLocaleDateString()}
-                  </p>
-                  <div className="p-4 bg-muted/50 rounded-lg border">
-                    <p>
-                      {feedbackComment}
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Weekly Evaluation</CardTitle>
+                <CardDescription>
+                  {role === 'teacher'
+                    ? "Provide weekly feedback and update the project's progress."
+                    : 'View the latest feedback from your supervisor.'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {role === 'teacher' || role === 'admin' ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="feedback-comment">
+                        This Week's Comments
+                      </Label>
+                      <Textarea
+                        id="feedback-comment"
+                        placeholder="Enter your feedback on the group's progress this week..."
+                        rows={5}
+                        value={newFeedbackComment}
+                        onChange={(e) => setNewFeedbackComment(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="progress-slider">
+                        Set Project Progress ({progressValue}%)
+                      </Label>
+                      <Slider
+                        id="progress-slider"
+                        defaultValue={[progressValue]}
+                        max={100}
+                        step={5}
+                        onValueChange={(value) => setProgressValue(value[0])}
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <Button onClick={handleSubmitEvaluation}>Submit Evaluation</Button>
+                    </div>
+                  </>
+                ) : (
+                  <div>
+                    <h4 className="font-semibold text-lg">Latest Feedback</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      From {supervisor?.name} on {new Date(group.evaluationHistory[0]?.date).toLocaleDateString()}
                     </p>
+                    <div className="p-4 bg-muted/50 rounded-lg border">
+                      <p>
+                        {group.evaluationHistory[0]?.comment}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                )}
+              </CardContent>
+            </Card>
+
+             <Card>
+              <CardHeader>
+                <CardTitle>Evaluation History</CardTitle>
+                <CardDescription>
+                  A log of all past feedback and progress reports.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-96">
+                  <div className="space-y-4">
+                  {group.evaluationHistory.map((evaluation, index) => (
+                    <div key={index} className="p-4 border rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <p className="text-sm font-semibold">
+                          Evaluation from {new Date(evaluation.date).toLocaleDateString()}
+                        </p>
+                        <Badge variant="outline">Progress: {evaluation.progress}%</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {evaluation.comment}
+                      </p>
+                    </div>
+                  ))}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="attendance">
@@ -524,7 +567,7 @@ export function GroupDetailsPage({
             </DialogHeader>
             <div className='py-4 space-y-4'>
                 <p className='text-sm text-muted-foreground'>This is a placeholder for the submitted file or content. In a real application, you would see the student's work here.</p>
-                <div className='p-4 border rounded-md bg-muted/50 h-32'>
+                <div className='p-4 border rounded-md bg-muted/50 h-32 flex items-center justify-center'>
                     <FileText className='mx-auto text-muted-foreground'/>
                 </div>
             </div>
@@ -541,5 +584,4 @@ export function GroupDetailsPage({
       </Dialog>
     </div>
   );
-
-    
+}
