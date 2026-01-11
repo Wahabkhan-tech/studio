@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   Table,
@@ -26,7 +27,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { students as initialStudents, departments } from '@/lib/data';
+import {
+  students as initialStudents,
+  departments,
+  groups as allGroups,
+} from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import {
@@ -48,11 +53,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import type { Student } from '@/lib/types';
+import type { Student, Group } from '@/lib/types';
+import Link from 'next/link';
 
 export default function StudentManagementPage() {
   const [students, setStudents] = useState<Student[]>(initialStudents);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [groups, setGroups] = useState<Group[]>(allGroups);
+  const [isAddStudentDialogOpen, setIsAddStudentDialogOpen] = useState(false);
+  const [isAddToGroupDialogOpen, setIsAddToGroupDialogOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+
   const { toast } = useToast();
 
   const handleAddStudent = (e: React.FormEvent<HTMLFormElement>) => {
@@ -75,20 +85,68 @@ export default function StudentManagementPage() {
     };
 
     setStudents([newStudent, ...students]);
-    setIsDialogOpen(false);
+    setIsAddStudentDialogOpen(false);
     toast({
       title: 'Student Added',
       description: `${newStudent.name} has been added to the registry.`,
     });
   };
-  
-    const handleStatusChange = (studentId: string, newStatus: Student['status']) => {
-    setStudents(students.map(s => s.id === studentId ? { ...s, status: newStatus } : s));
+
+  const handleStatusChange = (
+    studentId: string,
+    newStatus: Student['status']
+  ) => {
+    setStudents(
+      students.map((s) =>
+        s.id === studentId ? { ...s, status: newStatus } : s
+      )
+    );
     toast({
       title: 'Status Updated',
       description: `Student status has been changed to ${newStatus}.`,
     });
   };
+
+  const handleOpenAddToGroupDialog = (student: Student) => {
+    setSelectedStudent(student);
+    setIsAddToGroupDialogOpen(true);
+  };
+  
+  const handleAssignGroup = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!selectedStudent) return;
+    
+    const formData = new FormData(e.currentTarget);
+    const groupId = formData.get('group') as string;
+
+    // Remove student from any previous group
+    const updatedGroups = groups.map(g => ({
+        ...g,
+        memberIds: g.memberIds.filter(id => id !== selectedStudent.id)
+    }));
+
+    // Add student to the new group
+    const finalGroups = updatedGroups.map(g => {
+        if (g.id === groupId && !g.memberIds.includes(selectedStudent.id)) {
+            return {
+                ...g,
+                memberIds: [...g.memberIds, selectedStudent.id]
+            }
+        }
+        return g;
+    });
+
+    setGroups(finalGroups);
+
+    toast({
+        title: "Student Assigned",
+        description: `${selectedStudent.name} has been added to group "${finalGroups.find(g => g.id === groupId)?.name}".`
+    });
+
+    setIsAddToGroupDialogOpen(false);
+    setSelectedStudent(null);
+  };
+
 
   return (
     <div className="grid gap-6 md:grid-cols-5">
@@ -108,7 +166,7 @@ export default function StudentManagementPage() {
                     <span className="sr-only">Avatar</span>
                   </TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Semester</TableHead>
+                  <TableHead>Group</TableHead>
                   <TableHead className="hidden md:table-cell">Status</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
@@ -120,6 +178,8 @@ export default function StudentManagementPage() {
                   const avatar = PlaceHolderImages.find(
                     (img) => img.id === student.avatar
                   );
+                  const group = groups.find(g => g.memberIds.includes(student.id));
+
                   return (
                     <TableRow key={student.id}>
                       <TableCell className="hidden sm:table-cell">
@@ -142,13 +202,23 @@ export default function StudentManagementPage() {
                           {student.email}
                         </div>
                       </TableCell>
-                      <TableCell>{student.semester}</TableCell>
+                       <TableCell>
+                        {group ? (
+                          <Link href={`/admin/groups/${group.id}`}>
+                            <Badge variant="secondary">{group.name}</Badge>
+                          </Link>
+                        ) : (
+                          <Badge variant="outline">Unassigned</Badge>
+                        )}
+                      </TableCell>
                       <TableCell className="hidden md:table-cell">
                         <Badge
                           variant={
                             student.status === 'ACTIVE'
                               ? 'default'
-                              : student.status === 'INACTIVE' ? 'secondary' : 'destructive'
+                              : student.status === 'INACTIVE'
+                              ? 'secondary'
+                              : 'destructive'
                           }
                         >
                           {student.status}
@@ -169,16 +239,26 @@ export default function StudentManagementPage() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             {student.status === 'INACTIVE' && (
-                              <DropdownMenuItem onClick={() => handleStatusChange(student.id, 'ACTIVE')}>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleStatusChange(student.id, 'ACTIVE')
+                                }
+                              >
                                 Approve
                               </DropdownMenuItem>
                             )}
-                             {student.status === 'ACTIVE' && (
-                              <DropdownMenuItem onClick={() => handleStatusChange(student.id, 'INACTIVE')}>
+                            {student.status === 'ACTIVE' && (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleStatusChange(student.id, 'INACTIVE')
+                                }
+                              >
                                 Deactivate
                               </DropdownMenuItem>
                             )}
+                             <DropdownMenuItem onClick={() => handleOpenAddToGroupDialog(student)}>Add to Group</DropdownMenuItem>
                             <DropdownMenuItem>View Profile</DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-destructive">
                               Delete
                             </DropdownMenuItem>
@@ -209,7 +289,10 @@ export default function StudentManagementPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog
+              open={isAddStudentDialogOpen}
+              onOpenChange={setIsAddStudentDialogOpen}
+            >
               <DialogTrigger asChild>
                 <Button className="w-full">
                   <PlusCircle className="mr-2 h-4 w-4" />
@@ -227,11 +310,21 @@ export default function StudentManagementPage() {
                   <div className="grid gap-4 py-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name</Label>
-                      <Input id="name" name="name" placeholder="e.g., John Doe" required />
+                      <Input
+                        id="name"
+                        name="name"
+                        placeholder="e.g., John Doe"
+                        required
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="reg-no">Registration / Seat Number</Label>
-                      <Input id="reg-no" name="reg-no" placeholder="e.g., EB12345" required />
+                      <Input
+                        id="reg-no"
+                        name="reg-no"
+                        placeholder="e.g., EB12345"
+                        required
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address</Label>
@@ -244,33 +337,35 @@ export default function StudentManagementPage() {
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="department">Department</Label>
-                            <Select name="department" defaultValue="cs">
-                                <SelectTrigger>
-                                <SelectValue placeholder="Select department" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                {departments.map((dept) => (
-                                    <SelectItem key={dept.id} value={dept.id}>{dept.name}</SelectItem>
-                                ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="class">Class/Program</Label>
-                            <Input id="class" name="class" defaultValue="BSCS" />
-                        </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="department">Department</Label>
+                        <Select name="department" defaultValue="cs">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select department" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {departments.map((dept) => (
+                              <SelectItem key={dept.id} value={dept.id}>
+                                {dept.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="class">Class/Program</Label>
+                        <Input id="class" name="class" defaultValue="BSCS" />
+                      </div>
                     </div>
-                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="section">Section</Label>
-                            <Input id="section" name="section" defaultValue="A" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="session">Session</Label>
-                            <Input id="session" name="session" defaultValue="2024" />
-                        </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="section">Section</Label>
+                        <Input id="section" name="section" defaultValue="A" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="session">Session</Label>
+                        <Input id="session" name="session" defaultValue="2024" />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="semester">Semester</Label>
@@ -312,13 +407,50 @@ export default function StudentManagementPage() {
               Ensure your CSV has columns: <br /> `name`, `seat_number`,
               `email`, `department`, `class`, `section`, `session`.
             </p>
-            <Button className="w-full" onClick={() => toast({ title: "File uploaded!", description: "Processing is simulated and won't add students."})}>
+            <Button
+              className="w-full"
+              onClick={() =>
+                toast({
+                  title: 'File uploaded!',
+                  description: "Processing is simulated and won't add students.",
+                })
+              }
+            >
               <Upload className="mr-2 h-4 w-4" />
               Upload and Process File
             </Button>
           </CardContent>
         </Card>
       </div>
+
+       <Dialog open={isAddToGroupDialogOpen} onOpenChange={setIsAddToGroupDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add "{selectedStudent?.name}" to a Group</DialogTitle>
+            <DialogDescription>
+              Select a group to assign this student to. This will remove them from their current group if they are in one.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleAssignGroup}>
+            <div className="py-4">
+              <Label htmlFor="group">Group</Label>
+              <Select name="group" required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a group" />
+                </SelectTrigger>
+                <SelectContent>
+                  {groups.map(g => (
+                    <SelectItem key={g.id} value={g.id}>{g.name} - {g.projectTitle}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Assign to Group</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
