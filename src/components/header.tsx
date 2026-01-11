@@ -16,6 +16,7 @@ import { Button } from './ui/button';
 import { Home, Package, Users, Building, Book, LineChart, Cog, UserCog, ClipboardList, CalendarCheck, PanelLeft, Search, User, MessageSquare, FilePen, Lock } from 'lucide-react';
 import { groups, students } from '@/lib/data';
 import { cn } from '@/lib/utils';
+import { Notifications } from './notifications';
 
 type HeaderProps = {
   role: 'admin' | 'teacher' | 'student';
@@ -127,10 +128,10 @@ export function Header({ role }: HeaderProps) {
       <Breadcrumb className="hidden md:flex">
         <BreadcrumbList>{breadcrumbItems}</BreadcrumbList>
       </Breadcrumb>
-      <div className="relative ml-auto flex-1 md:grow-0">
-        {/* Can add a search bar here if needed */}
+      <div className="relative ml-auto flex items-center gap-2 md:grow-0">
+        <Notifications role={role} />
+        <UserNav role={role} />
       </div>
-      <UserNav role={role} />
     </header>
   );
 }

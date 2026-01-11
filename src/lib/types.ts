@@ -1,4 +1,5 @@
 
+
 export type Student = {
   id: string;
   name: string;
@@ -76,4 +77,11 @@ export type Session = {
   groupId: string;
   date: string;
   attendees: string[];
+};
+
+export type Notification = {
+    id: string;
+    text: string;
+    time: string;
+    unread: boolean;
 };

@@ -1,5 +1,5 @@
 
-import type { Student, Teacher, Group, Task, Department, Session } from './types';
+import type { Student, Teacher, Group, Task, Department, Session, Notification } from './types';
 
 export const departments: Department[] = [
   { id: 'cs', name: 'Computer Science', head: 'Sir Mukesh' },
@@ -277,6 +277,7 @@ export const groups: Group[] = allGroupsRaw.map((group, index) => {
   const description = `This is the project description for ${projectTitle}. It involves complex problem-solving and innovative technology.`;
   const techStack = ['React', 'Next.js', 'Tailwind CSS'];
   const progress = Math.floor(Math.random() * 80) + 10;
+  const isPending = index % 4 === 0;
 
   return {
     id: group.groupId,
@@ -290,8 +291,8 @@ export const groups: Group[] = allGroupsRaw.map((group, index) => {
       title: projectTitle,
       description: `This is a detailed proposal for ${projectTitle}. It outlines the project's objectives, scope, and deliverables.`,
       techStack: techStack,
-      status: 'APPROVED',
-      feedback: 'The proposal is well-structured and the project is approved. Please proceed with the implementation.'
+      status: isPending ? 'PENDING' : 'APPROVED',
+      feedback: isPending ? undefined : 'The proposal is well-structured and the project is approved. Please proceed with the implementation.'
     },
     progress: progress,
     description: description,
@@ -325,3 +326,21 @@ export const sessions: Session[] = [
     { id: 'ses3', title: 'Initial Kick-off', groupId: 'G01', date: '2024-07-18', attendees: ['EB22210006139', 'EB22210006137', 'EB22210006061', 'EB22210006127'] },
     { id: 'ses4', title: 'Mid-Project Review', groupId: 'G06', date: '2024-08-01', attendees: ['EB22210006131'] },
 ];
+
+export const notifications: { [key in 'admin' | 'teacher' | 'student']: Notification[] } = {
+  student: [
+    { id: 'n1', text: 'Your proposal for "Group 1" has been approved!', time: '2 hours ago', unread: true },
+    { id: 'n2', text: 'Sir Mukesh scheduled a new session: "Weekly Sync".', time: '1 day ago', unread: true },
+    { id: 'n3', text: 'A new task "Implement Authentication" was assigned to you.', time: '3 days ago', unread: false },
+  ],
+  teacher: [
+    { id: 'n4', text: '"Group 4" has submitted their project proposal for review.', time: '5 minutes ago', unread: true },
+    { id: 'n5', text: 'You have a new message from the Admin.', time: '1 hour ago', unread: false },
+    { id: 'n6', text: 'Attendance for "Group 2" is pending for yesterday\'s session.', time: '1 day ago', unread: false },
+  ],
+  admin: [
+    { id: 'n7', text: 'A new student "Ahmad Mustafa" has registered.', time: '15 minutes ago', unread: true },
+    { id: 'n8', text: 'Sir Nadeem created a new group: "Group 21".', time: '2 hours ago', unread: false },
+    { id: 'n9', text: 'The final project submission deadline is approaching.', time: '5 days ago', unread: false },
+  ],
+};
