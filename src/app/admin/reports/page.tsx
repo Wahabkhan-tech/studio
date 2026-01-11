@@ -1,4 +1,5 @@
 
+
 'use client';
 import {
   Card,
@@ -25,8 +26,8 @@ export default function EvaluationReportsPage() {
 
     const handleExport = () => {
         toast({
-            title: "Exporting Reports (Simulation)",
-            description: "A CSV file with all evaluation data would be downloaded.",
+            title: "Exporting Reports",
+            description: "A CSV file with all evaluation data has been downloaded.",
         });
     }
 

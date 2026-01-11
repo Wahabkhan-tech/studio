@@ -54,27 +54,26 @@ export default function OnboardingPage() {
   const loggedInStudent = students[0];
 
   useEffect(() => {
-    const studentGroup = groups.find(g => g.memberIds.includes(loggedInStudent.id));
+    const studentGroup = initialGroups.find(g => g.memberIds.includes(loggedInStudent.id));
     if (studentGroup) {
       setMyGroup(studentGroup);
-      if (studentGroup.proposal.status === 'PENDING' || studentGroup.proposal.status === 'CHANGES_REQUESTED') {
+      if (studentGroup.proposal.status === 'APPROVED' || studentGroup.proposal.status === 'PENDING' || studentGroup.proposal.status === 'CHANGES_REQUESTED') {
         setCurrentStep(2);
-      } else if (studentGroup.proposal.status === 'NONE') {
+      } else {
         setCurrentStep(1);
       }
     }
-  }, [groups, loggedInStudent.id]);
+  }, [loggedInStudent.id]);
 
 
   const goToNextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
   const goToPreviousStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
-  const handleRequestJoin = (groupId: string) => {
+  const handleRequestJoin = (groupName: string) => {
     toast({
         title: "Request Sent!",
-        description: `Your request to join group "${groups.find(g => g.id === groupId)?.name}" has been sent.`,
+        description: `Your request to join group "${groupName}" has been sent.`,
     });
-    // In a real app, this would be a request. For demo, we just show toast.
   }
   
   const handleGroupCreation = (e: React.FormEvent<HTMLFormElement>) => {
@@ -211,7 +210,7 @@ export default function OnboardingPage() {
                                 <p className='text-sm text-muted-foreground'>{group.projectTitle}</p>
                                 <p className='text-xs text-muted-foreground mt-1'>Members: {group.memberIds.length}</p>
                             </div>
-                            <Button size="sm" onClick={() => handleRequestJoin(group.id)}>Request to Join</Button>
+                            <Button size="sm" onClick={() => handleRequestJoin(group.name)}>Request to Join</Button>
                         </div>
                     ))}
                 </div>

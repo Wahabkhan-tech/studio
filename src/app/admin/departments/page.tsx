@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -57,8 +58,8 @@ export default function DepartmentManagementPage() {
   
   const handleEdit = (deptName: string) => {
     toast({
-        title: "Action Triggered (Demo)",
-        description: `Editing for "${deptName}" would be enabled.`
+        title: "Action Triggered",
+        description: `Editing for "${deptName}" would be enabled here.`
     })
   }
 

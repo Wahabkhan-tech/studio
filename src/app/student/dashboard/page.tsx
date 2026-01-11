@@ -1,6 +1,7 @@
 
 
 
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -20,9 +21,13 @@ export default function StudentDashboard() {
   const loggedInStudent = students[0];
   const myGroup = groups.find((g) => g.memberIds.includes(loggedInStudent.id));
   
-  // In a real app, this status would determine if the user sees the dashboard or is redirected to onboarding.
-  // This logic is now handled in the layout.tsx file to prevent redirect loops.
-  if (!myGroup || myGroup.proposal.status !== 'APPROVED') {
+  // This page should only be accessible if the user has completed onboarding.
+  // The layout file handles the redirection logic.
+  // If we are here, it means the user is approved.
+  
+  if (!myGroup) {
+    // This case should theoretically not be reached due to layout redirect,
+    // but as a fallback, we redirect.
     redirect('/student/onboarding');
   }
   
