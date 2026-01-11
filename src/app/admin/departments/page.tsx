@@ -1,3 +1,4 @@
+
 'use client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -53,6 +54,13 @@ export default function DepartmentManagementPage() {
       description: `The "${newDeptName}" department has been added.`,
     });
   };
+  
+  const handleEdit = (deptName: string) => {
+    toast({
+        title: "Action Triggered (Demo)",
+        description: `Editing for "${deptName}" would be enabled.`
+    })
+  }
 
   return (
     <div className="grid gap-6 md:grid-cols-5">
@@ -86,7 +94,7 @@ export default function DepartmentManagementPage() {
                     </TableCell>
                     <TableCell>{dept.head}</TableCell>
                     <TableCell>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => handleEdit(dept.name)}>
                         Edit
                       </Button>
                     </TableCell>
@@ -134,3 +142,5 @@ export default function DepartmentManagementPage() {
     </div>
   );
 }
+
+    

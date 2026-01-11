@@ -1,3 +1,5 @@
+
+'use client';
 import {
   Card,
   CardContent,
@@ -16,8 +18,18 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { groups } from '@/lib/data';
+import { useToast } from '@/hooks/use-toast';
 
 export default function EvaluationReportsPage() {
+    const { toast } = useToast();
+
+    const handleExport = () => {
+        toast({
+            title: "Exporting Reports (Simulation)",
+            description: "A CSV file with all evaluation data would be downloaded.",
+        });
+    }
+
   return (
     <Card>
       <CardHeader>
@@ -28,7 +40,7 @@ export default function EvaluationReportsPage() {
               View final marks and export reports.
             </CardDescription>
           </div>
-          <Button size="sm" className="gap-1">
+          <Button size="sm" className="gap-1" onClick={handleExport}>
             <Download className="h-3.5 w-3.5" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
               Export All
@@ -67,3 +79,5 @@ export default function EvaluationReportsPage() {
     </Card>
   );
 }
+
+    

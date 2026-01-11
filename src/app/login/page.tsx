@@ -1,3 +1,4 @@
+
 'use client';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,9 +18,11 @@ import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
 import { teachers } from '@/lib/data';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
 
@@ -37,6 +40,13 @@ export default function LoginPage() {
         }
     }, 1500)
   };
+  
+  const handleForgotPassword = () => {
+    toast({
+        title: "Forgot Password (Demo)",
+        description: "A password reset link would be sent to your email address."
+    })
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-muted/40 p-4">
@@ -73,9 +83,9 @@ export default function LoginPage() {
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
-                <Link href="#" className="ml-auto inline-block text-sm underline">
+                <Button variant="link" size="sm" type="button" onClick={handleForgotPassword} className="ml-auto inline-block text-sm underline">
                   Forgot your password?
-                </Link>
+                </Button>
               </div>
               <Input id="password" type="password" required disabled={isLoading} defaultValue="password" />
             </div>
@@ -111,3 +121,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    

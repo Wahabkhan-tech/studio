@@ -1,3 +1,4 @@
+
 'use client';
 import { useState } from 'react';
 import { MoreHorizontal, PlusCircle } from 'lucide-react';
@@ -78,6 +79,13 @@ export default function TeacherManagementPage() {
       description: `${newTeacher.name} has been added to the system.`,
     });
   };
+  
+  const handleActionClick = (description: string) => {
+    toast({
+      title: 'Action Triggered (Demo)',
+      description,
+    });
+  }
 
   return (
     <Card>
@@ -233,9 +241,9 @@ export default function TeacherManagementPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Reset Password</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
+                        <DropdownMenuItem onClick={() => handleActionClick(`Editing teacher: ${teacher.name}`)}>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleActionClick(`Password reset for ${teacher.name} would be sent.`)}>Reset Password</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive" onClick={() => handleActionClick(`${teacher.name}'s account would be disabled.`)}>
                           Disable
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -256,3 +264,5 @@ export default function TeacherManagementPage() {
     </Card>
   );
 }
+
+    
