@@ -7,13 +7,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { groups, teachers, students } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
-import { Send, Users, UserCog, PlusCircle, MoreVertical, LogOut } from 'lucide-react';
+import { Send, Users, UserCog, PlusCircle, MoreVertical, LogOut, Paperclip, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   Dialog,
@@ -54,6 +55,7 @@ export default function StudentChatPage() {
   const [newMessage, setNewMessage] = useState('');
   const [selectedConversationId, setSelectedConversationId] = useState(myGroup.id);
   const [isCreateChatOpen, setIsCreateChatOpen] = useState(false);
+  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
   const { toast } = useToast();
 
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
@@ -94,7 +96,7 @@ export default function StudentChatPage() {
     }
     
     const newChatId = `chat-${Date.now()}`;
-    const newConversation = {
+    const newConversation: any = {
         id: newChatId,
         name: chatName,
         type: 'custom-group',
@@ -105,6 +107,30 @@ export default function StudentChatPage() {
     setSelectedConversationId(newChatId);
     setIsCreateChatOpen(false);
     toast({ title: "Chat Created!", description: `You started the "${chatName}" chat.`});
+  }
+  
+  const handleAddMembers = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const newMemberIds = students.filter(s => formData.get(s.id)).map(s => s.id);
+
+    if (newMemberIds.length === 0) {
+        toast({ title: "No members selected", description: "Please select at least one member to add.", variant: 'destructive'});
+        return;
+    }
+
+    setConversations(prev => prev.map(c => {
+        if (c.id === selectedConversationId) {
+            return {
+                ...c,
+                members: Array.from(new Set([...(c.members || []), ...newMemberIds]))
+            }
+        }
+        return c;
+    }));
+
+    setIsAddMemberOpen(false);
+    toast({ title: "Members Added", description: `${newMemberIds.length} new member(s) have been added to the chat.` });
   }
 
   const handleLeaveChat = (chatId: string) => {
@@ -124,13 +150,18 @@ export default function StudentChatPage() {
     }
   }
 
-  const getAvatarUrl = (id: string, type: string) => {
+  const getAvatarUrl = (id: string, type: 'teacher' | 'student') => {
     let person;
     if (type === 'teacher') person = teachers.find(t => t.id === id);
     if (type === 'student') person = students.find(s => s.id === id);
     if (!person) return undefined;
     return PlaceHolderImages.find(p => p.id === person.avatar)?.imageUrl;
   }
+
+  const otherStudentsInSystem = students.filter(s => s.id !== loggedInStudent.id);
+  const membersInCurrentCustomChat = selectedConversation?.members || [];
+  const studentsNotInCurrentChat = otherStudentsInSystem.filter(s => !membersInCurrentCustomChat.includes(s.id));
+
 
   return (
     <div className="grid h-[calc(100vh-8rem)] grid-cols-4">
@@ -155,7 +186,7 @@ export default function StudentChatPage() {
                         <div className="space-y-2">
                             <Label>Select Members</Label>
                             <ScrollArea className="h-48 rounded-md border p-4">
-                            {students.filter(s => s.id !== loggedInStudent.id).map(student => (
+                            {otherStudentsInSystem.map(student => (
                                 <div key={student.id} className="flex items-center gap-3 mb-2">
                                     <Checkbox id={student.id} name={student.id} />
                                     <Label htmlFor={student.id} className="font-normal flex items-center gap-2">
@@ -206,20 +237,57 @@ export default function StudentChatPage() {
                     <div>
                         <p className="font-semibold">{selectedConversation.name}</p>
                         {selectedConversation.type === 'group' && <p className="text-sm text-muted-foreground">{myGroup?.projectTitle}</p>}
+                        {selectedConversation.type === 'custom-group' && <p className="text-sm text-muted-foreground">{selectedConversation.members?.length} members</p>}
                     </div>
                 </div>
                  {selectedConversation.type === 'custom-group' && (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon"><MoreVertical className="h-5 w-5" /></Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem className="text-destructive" onClick={() => handleLeaveChat(selectedConversationId)}>
-                                <LogOut className="mr-2 h-4 w-4" />
-                                Leave Chat
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Dialog open={isAddMemberOpen} onOpenChange={setIsAddMemberOpen}>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon"><MoreVertical className="h-5 w-5" /></Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DialogTrigger asChild>
+                                    <DropdownMenuItem>
+                                        <UserPlus className="mr-2 h-4 w-4" />
+                                        Add Member
+                                    </DropdownMenuItem>
+                                </DialogTrigger>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="text-destructive" onClick={() => handleLeaveChat(selectedConversationId)}>
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    Leave Chat
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                         <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Add Members to "{selectedConversation.name}"</DialogTitle>
+                                <DialogDescription>Select students to add to this chat.</DialogDescription>
+                            </DialogHeader>
+                            <form onSubmit={handleAddMembers}>
+                                <div className="py-4">
+                                <ScrollArea className="h-60 rounded-md border p-4">
+                                {studentsNotInCurrentChat.length > 0 ? studentsNotInCurrentChat.map(student => (
+                                    <div key={student.id} className="flex items-center gap-3 mb-2">
+                                        <Checkbox id={`add-${student.id}`} name={student.id} />
+                                        <Label htmlFor={`add-${student.id}`} className="font-normal flex items-center gap-2">
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarImage src={getAvatarUrl(student.id, 'student')} />
+                                                <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            {student.name}
+                                        </Label>
+                                    </div>
+                                )) : <p className="text-sm text-muted-foreground text-center">All students are already in this chat.</p>}
+                                </ScrollArea>
+                                </div>
+                                <DialogFooter>
+                                    <Button type="submit">Add to Chat</Button>
+                                </DialogFooter>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
                 )}
             </div>
             <ScrollArea className="flex-1 p-4">
@@ -260,19 +328,27 @@ export default function StudentChatPage() {
             <div className="relative">
                 <Input 
                 placeholder="Type your message..." 
-                className="pr-12"
+                className="pr-24"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={handleKeyPress}
                 />
-                <Button
-                size="icon"
-                variant="ghost"
-                className="absolute right-1 top-1/2 -translate-y-1/2"
-                onClick={handleSendMessage}
-                >
-                <Send className="h-5 w-5 text-primary" />
-                </Button>
+                <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => toast({ title: 'Feature not available', description: 'File sharing is not implemented in this demo.' })}
+                    >
+                        <Paperclip className="h-5 w-5 text-muted-foreground" />
+                    </Button>
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={handleSendMessage}
+                    >
+                        <Send className="h-5 w-5 text-primary" />
+                    </Button>
+                </div>
             </div>
             </div>
         </>

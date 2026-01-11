@@ -7,7 +7,16 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { groups, teachers, students } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
-import { Search, Send, Users, Shield } from 'lucide-react';
+import { Search, Send, Users, Shield, Paperclip } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
 
 const loggedInTeacher = teachers[0];
 const myGroups = groups.filter((g) => g.supervisorId === loggedInTeacher.id);
@@ -32,6 +41,7 @@ export default function TeacherChatPage() {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState('');
   const [selectedConversationId, setSelectedConversationId] = useState(initialConversations[1]?.id || 'G02');
+  const { toast } = useToast();
 
   const selectedConversation = initialConversations.find(c => c.id === selectedConversationId);
   const currentMessages = messages[selectedConversationId] || [];
@@ -73,6 +83,14 @@ export default function TeacherChatPage() {
     return PlaceHolderImages.find(p => p.id === student.avatar)?.imageUrl;
   }
 
+  const selectedGroup = selectedConversation?.type === 'group' 
+    ? myGroups.find(g => g.id === selectedConversation.id)
+    : null;
+  
+  const selectedGroupMembers = selectedGroup
+    ? students.filter(s => selectedGroup.memberIds.includes(s.id))
+    : [];
+
   return (
     <div className="grid h-[calc(100vh-8rem)] grid-cols-4">
       <div className="col-span-1 flex flex-col border-r">
@@ -107,11 +125,39 @@ export default function TeacherChatPage() {
         {selectedConversation ? (
         <>
             <div className="flex items-center gap-4 border-b p-4">
-            <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">{getConversationIcon(selectedConversation.type)}</div>
-            <div>
-                <p className="font-semibold">{selectedConversation.name}</p>
-                {selectedConversation.type === 'group' && <p className="text-sm text-muted-foreground">{myGroups.find(g => g.id === selectedConversation.id)?.projectTitle}</p>}
-            </div>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <button className="h-10 w-10 rounded-full bg-muted flex items-center justify-center cursor-pointer disabled:cursor-not-allowed" disabled={selectedConversation.type !== 'group'}>
+                            {getConversationIcon(selectedConversation.type)}
+                        </button>
+                    </DialogTrigger>
+                    {selectedGroup && (
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Members of {selectedGroup.name}</DialogTitle>
+                                <DialogDescription>{selectedGroup.projectTitle}</DialogDescription>
+                            </DialogHeader>
+                            <div className="py-4 space-y-4">
+                                {selectedGroupMembers.map(member => (
+                                    <div key={member.id} className="flex items-center gap-4">
+                                        <Avatar>
+                                            <AvatarImage src={getAvatarUrl(member.id)} />
+                                            <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-medium">{member.name}</p>
+                                            <p className="text-sm text-muted-foreground">{member.email}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </DialogContent>
+                    )}
+                </Dialog>
+                <div>
+                    <p className="font-semibold">{selectedConversation.name}</p>
+                    {selectedConversation.type === 'group' && <p className="text-sm text-muted-foreground">{myGroups.find(g => g.id === selectedConversation.id)?.projectTitle}</p>}
+                </div>
             </div>
             <ScrollArea className="flex-1 p-4">
             <div className="space-y-4">
@@ -151,19 +197,27 @@ export default function TeacherChatPage() {
             <div className="relative">
                 <Input 
                 placeholder="Type your message..." 
-                className="pr-12"
+                className="pr-24"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={handleKeyPress}
                 />
-                <Button
-                size="icon"
-                variant="ghost"
-                className="absolute right-1 top-1/2 -translate-y-1/2"
-                onClick={handleSendMessage}
-                >
-                <Send className="h-5 w-5 text-primary" />
-                </Button>
+                 <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                   <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => toast({ title: 'Feature not available', description: 'File sharing is not implemented in this demo.' })}
+                  >
+                    <Paperclip className="h-5 w-5 text-muted-foreground" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={handleSendMessage}
+                  >
+                    <Send className="h-5 w-5 text-primary" />
+                  </Button>
+                </div>
             </div>
             </div>
         </>

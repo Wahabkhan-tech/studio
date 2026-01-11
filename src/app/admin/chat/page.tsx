@@ -7,17 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { teachers, students } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
-import { Search, Send, Users, Shield, UserCog } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+import { Search, Send, Users, Shield, UserCog, Paperclip } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const initialConversations = [
@@ -43,6 +33,7 @@ export default function AdminChatPage() {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState('');
   const [selectedConversationId, setSelectedConversationId] = useState(initialConversations[0].id);
+  const { toast } = useToast();
 
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
   const currentMessages = messages[selectedConversationId] || [];
@@ -185,19 +176,27 @@ export default function AdminChatPage() {
               <div className="relative">
                 <Input 
                   placeholder="Type your message..." 
-                  className="pr-12" 
+                  className="pr-24" 
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyDown={handleKeyPress}
                 />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="absolute right-1 top-1/2 -translate-y-1/2"
-                  onClick={handleSendMessage}
-                >
-                  <Send className="h-5 w-5 text-primary" />
-                </Button>
+                 <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
+                   <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => toast({ title: 'Feature not available', description: 'File sharing is not implemented in this demo.' })}
+                  >
+                    <Paperclip className="h-5 w-5 text-muted-foreground" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={handleSendMessage}
+                  >
+                    <Send className="h-5 w-5 text-primary" />
+                  </Button>
+                </div>
               </div>
             </div>
         </>
