@@ -276,7 +276,8 @@ export const groups: Group[] = allGroupsRaw.map((group, index) => {
   const projectTitle = `FYP Title for ${group.groupName}`;
   const description = `This is the project description for ${projectTitle}. It involves complex problem-solving and innovative technology.`;
   const techStack = ['React', 'Next.js', 'Tailwind CSS'];
-  const progress = Math.floor(Math.random() * 80) + 10;
+  // Deterministic progress based on index to avoid hydration errors
+  const progress = (index * 5 + 10) % 100;
   const proposalStatusValue = index % 4 === 0 ? 'PENDING' : 'APPROVED';
 
   return {
