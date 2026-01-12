@@ -27,9 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue,
   } from '@/components/ui/select';
@@ -51,19 +49,25 @@ export default function OnboardingPage() {
   const router = useRouter();
 
   // In a real app, this would be the logged in user from context/session
-  const loggedInStudent = students[0];
-
+  const loggedInStudent = students.find(s => s.id === 'EB22210006139');
+  
   useEffect(() => {
-    const studentGroup = initialGroups.find(g => g.memberIds.includes(loggedInStudent.id));
+    if (!loggedInStudent) {
+        router.push('/login/student');
+        return;
+    }
+    const studentGroup = groups.find(g => g.memberIds.includes(loggedInStudent.id));
     if (studentGroup) {
       setMyGroup(studentGroup);
-      if (studentGroup.proposal.status === 'APPROVED' || studentGroup.proposal.status === 'PENDING' || studentGroup.proposal.status === 'CHANGES_REQUESTED') {
+      if (studentGroup.proposal.status === 'APPROVED') {
+        router.push('/student/dashboard');
+      } else if (studentGroup.proposal.status === 'PENDING' || studentGroup.proposal.status === 'CHANGES_REQUESTED') {
         setCurrentStep(2);
       } else {
         setCurrentStep(1);
       }
     }
-  }, [loggedInStudent.id]);
+  }, [loggedInStudent, router, groups]);
 
 
   const goToNextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -78,6 +82,8 @@ export default function OnboardingPage() {
   
   const handleGroupCreation = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!loggedInStudent) return;
+
     const formData = new FormData(e.currentTarget);
     const groupName = formData.get('group-name') as string;
     
@@ -149,6 +155,9 @@ export default function OnboardingPage() {
   const availableGroups = groups.filter(g => g.status !== 'COMPLETED');
   const unassignedStudents = students.filter(s => !groups.some(g => g.memberIds.includes(s.id)));
 
+  if (!loggedInStudent) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -323,5 +332,3 @@ export default function OnboardingPage() {
     </div>
   );
 }
-
-    

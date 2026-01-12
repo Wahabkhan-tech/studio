@@ -1,7 +1,5 @@
 
-
-
-
+'use client';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,16 +16,14 @@ import { redirect } from 'next/navigation';
 
 export default function StudentDashboard() {
   // Assuming the logged in student is the first one in the list for demonstration.
-  const loggedInStudent = students[0];
+  const loggedInStudent = students.find(s => s.id === 'EB22210006139');
+  if (!loggedInStudent) {
+    redirect('/login/student');
+  }
+
   const myGroup = groups.find((g) => g.memberIds.includes(loggedInStudent.id));
   
-  // This page should only be accessible if the user has completed onboarding.
-  // The layout file handles the redirection logic.
-  // If we are here, it means the user is approved.
-  
-  if (!myGroup) {
-    // This case should theoretically not be reached due to layout redirect,
-    // but as a fallback, we redirect.
+  if (!myGroup || myGroup.proposal.status !== 'APPROVED') {
     redirect('/student/onboarding');
   }
   
@@ -105,5 +101,3 @@ export default function StudentDashboard() {
     </div>
   );
 }
-
-    

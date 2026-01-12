@@ -277,7 +277,7 @@ export const groups: Group[] = allGroupsRaw.map((group, index) => {
   const description = `This is the project description for ${projectTitle}. It involves complex problem-solving and innovative technology.`;
   const techStack = ['React', 'Next.js', 'Tailwind CSS'];
   const progress = Math.floor(Math.random() * 80) + 10;
-  const isPending = index % 4 === 0;
+  const proposalStatusValue = index % 4 === 0 ? 'PENDING' : 'APPROVED';
 
   return {
     id: group.groupId,
@@ -291,8 +291,8 @@ export const groups: Group[] = allGroupsRaw.map((group, index) => {
       title: projectTitle,
       description: `This is a detailed proposal for ${projectTitle}. It outlines the project's objectives, scope, and deliverables.`,
       techStack: techStack,
-      status: isPending ? 'PENDING' : 'APPROVED',
-      feedback: isPending ? undefined : 'The proposal is well-structured and the project is approved. Please proceed with the implementation.'
+      status: proposalStatusValue,
+      feedback: proposalStatusValue === 'APPROVED' ? 'The proposal is well-structured and the project is approved. Please proceed with the implementation.' : undefined,
     },
     progress: progress,
     description: description,
