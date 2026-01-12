@@ -1,4 +1,3 @@
-
 'use client';
 import {
   Card,
@@ -137,6 +136,13 @@ export function GroupDetailsPage({
         description: `Progress for ${group.name} has been updated to ${progressValue}%.`
     })
   }
+  
+  const handleProposalAction = (action: 'Approved' | 'Rejected' | 'Changes Requested') => {
+    toast({
+        title: `Proposal ${action}`,
+        description: `The proposal has been updated.`,
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -208,7 +214,8 @@ export function GroupDetailsPage({
               {supervisor && (
                 <div>
                   <h4 className="font-semibold mb-2">Supervisor</h4>
-                  <div className="flex items-center gap-4">
+                  <Link href={`/teacher/profile/${supervisor.id}`}>
+                  <div className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted/50 w-fit">
                     <Avatar className="h-12 w-12">
                       <AvatarImage
                         src={
@@ -228,6 +235,7 @@ export function GroupDetailsPage({
                       </p>
                     </div>
                   </div>
+                  </Link>
                 </div>
               )}
               <div>
@@ -238,9 +246,9 @@ export function GroupDetailsPage({
                       (p) => p.id === member.avatar
                     );
                     return (
+                      <Link href={`/student/profile/${member.id}`} key={member.id}>
                       <div
-                        key={member.id}
-                        className="flex items-center gap-4 p-2 rounded-lg"
+                        className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted/50"
                       >
                         <Avatar className="h-12 w-12">
                           {avatar && <AvatarImage src={avatar.imageUrl} />}
@@ -260,6 +268,7 @@ export function GroupDetailsPage({
                           </p>
                         </div>
                       </div>
+                      </Link>
                     );
                   })}
                 </div>
@@ -302,15 +311,15 @@ export function GroupDetailsPage({
                     defaultValue={group.proposal.feedback}
                   />
                   <div className="flex gap-2 mt-2 justify-end">
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={() => handleProposalAction('Changes Requested')}>
                       <Send className="mr-2 h-4 w-4" />
                       Request Changes
                     </Button>
-                    <Button variant="destructive">
+                    <Button variant="destructive" onClick={() => handleProposalAction('Rejected')}>
                       <X className="mr-2 h-4 w-4" />
                       Reject
                     </Button>
-                    <Button>
+                    <Button onClick={() => handleProposalAction('Approved')}>
                       <Check className="mr-2 h-4 w-4" />
                       Approve
                     </Button>
@@ -404,7 +413,15 @@ export function GroupDetailsPage({
                         <TableCell className="font-medium">
                           {task.title}
                         </TableCell>
-                        <TableCell>{assignee?.name}</TableCell>
+                        <TableCell>
+                            {assignee ? (
+                                <Link href={`/student/profile/${assignee.id}`} className="hover:underline">
+                                    {assignee.name}
+                                </Link>
+                            ) : (
+                                "Unassigned"
+                            )}
+                        </TableCell>
                         <TableCell>
                           <Badge
                             variant={

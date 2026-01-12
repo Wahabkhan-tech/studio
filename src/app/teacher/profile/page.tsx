@@ -1,4 +1,3 @@
-
 'use client';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,9 +16,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
-export default function TeacherProfilePage() {
+export default function MyTeacherProfilePage() {
   const { toast } = useToast();
-  const teacher = teachers[0];
+  // This is the logged-in user's own profile page.
+  const teacher = teachers[0]; 
   const avatar = PlaceHolderImages.find((p) => p.id === teacher.avatar);
 
   const handleSaveChanges = () => {

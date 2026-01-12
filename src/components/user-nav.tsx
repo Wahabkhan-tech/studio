@@ -21,24 +21,27 @@ type UserNavProps = {
 };
 
 export function UserNav({ role }: UserNavProps) {
-  let userName, userEmail, userAvatarId;
+  let userId, userName, userEmail, userAvatarId;
 
   // In a real app, you'd get the logged-in user's data from a session or context.
   // Here, we'll just pick the first one from the mock data for demonstration.
   switch (role) {
     case 'admin':
+      userId = 'admin';
       userName = 'Admin User';
       userEmail = 'admin@protracks.com';
       userAvatarId = '10'; // Using teacher avatar for admin
       break;
     case 'teacher':
       const teacher = teachers[0];
+      userId = teacher.id;
       userName = teacher.name;
       userEmail = teacher.email;
       userAvatarId = teacher.avatar;
       break;
     case 'student':
       const student = students[0];
+      userId = student.id;
       userName = student.name;
       userEmail = student.email;
       userAvatarId = student.avatar;
@@ -76,7 +79,7 @@ export function UserNav({ role }: UserNavProps) {
             <DropdownMenuItem asChild>
               <Link href="/student/profile">
                 <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+                <span>My Profile</span>
               </Link>
             </DropdownMenuItem>
           )}
@@ -84,7 +87,7 @@ export function UserNav({ role }: UserNavProps) {
             <DropdownMenuItem asChild>
               <Link href="/teacher/profile">
                 <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+                <span>My Profile</span>
               </Link>
             </DropdownMenuItem>
           )}
@@ -116,5 +119,3 @@ export function UserNav({ role }: UserNavProps) {
     </DropdownMenu>
   );
 }
-
-    

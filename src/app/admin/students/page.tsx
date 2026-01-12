@@ -197,7 +197,9 @@ export default function StudentManagementPage() {
                         </Avatar>
                       </TableCell>
                       <TableCell className="font-medium">
-                        <div>{student.name}</div>
+                        <Link href={`/student/profile/${student.id}`} className="hover:underline text-primary">
+                          {student.name}
+                        </Link>
                         <div className="text-sm text-muted-foreground">
                           {student.email}
                         </div>
@@ -238,6 +240,9 @@ export default function StudentManagementPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                             <DropdownMenuItem asChild>
+                                <Link href={`/student/profile/${student.id}`}>View Profile</Link>
+                             </DropdownMenuItem>
                             {student.status === 'INACTIVE' && (
                               <DropdownMenuItem
                                 onClick={() =>
@@ -257,7 +262,6 @@ export default function StudentManagementPage() {
                               </DropdownMenuItem>
                             )}
                              <DropdownMenuItem onClick={() => handleOpenAddToGroupDialog(student)}>Add to Group</DropdownMenuItem>
-                            <DropdownMenuItem>View Profile</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-destructive">
                               Delete

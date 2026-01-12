@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import { MoreHorizontal, PlusCircle } from 'lucide-react';
@@ -203,8 +202,8 @@ export default function TeacherManagementPage() {
                     </Avatar>
                   </TableCell>
                   <TableCell className="font-medium">
-                    <Link
-                      href={`/admin/teachers/${teacher.id}/groups`}
+                     <Link
+                      href={`/teacher/profile/${teacher.id}`}
                       className="text-primary hover:underline"
                     >
                       {teacher.name}
@@ -241,6 +240,12 @@ export default function TeacherManagementPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem asChild>
+                           <Link href={`/teacher/profile/${teacher.id}`}>View Profile</Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                           <Link href={`/admin/teachers/${teacher.id}/groups`}>View Groups</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleActionClick(`Editing teacher: ${teacher.name}`)}>Edit</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleActionClick(`Password reset for ${teacher.name} would be sent.`)}>Reset Password</DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive" onClick={() => handleActionClick(`${teacher.name}'s account would be disabled.`)}>
@@ -264,5 +269,3 @@ export default function TeacherManagementPage() {
     </Card>
   );
 }
-
-    

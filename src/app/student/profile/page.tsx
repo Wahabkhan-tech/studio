@@ -1,4 +1,3 @@
-
 'use client';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,9 +17,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
-export default function ProfileCompletionPage() {
+export default function MyStudentProfilePage() {
   const { toast } = useToast();
-  const student = students[0];
+  // This is the logged-in user's own profile page for editing
+  const student = students[0]; 
   const avatar = PlaceHolderImages.find((p) => p.id === student.avatar);
   const profileStatus = "PENDING_APPROVAL"; // This would be dynamic
 
@@ -88,8 +88,8 @@ export default function ProfileCompletionPage() {
                 <Input id="contact" placeholder="Your phone number" />
             </div>
              <div className="space-y-2">
-                <Label htmlFor="eb-number">EB Number</Label>
-                <Input id="eb-number" defaultValue="EB123456" disabled/>
+                <Label htmlFor="eb-number">Registration Number</Label>
+                <Input id="eb-number" defaultValue={student.registrationNumber} disabled/>
             </div>
         </div>
 
