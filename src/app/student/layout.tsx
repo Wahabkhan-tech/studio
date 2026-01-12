@@ -44,10 +44,6 @@ export default function StudentLayout({
   const myGroup = groups.find((g) => g.memberIds.includes(loggedInStudent.id));
   const isProfileComplete = myGroup?.proposal.status === 'APPROVED';
   
-  if (!isProfileComplete && pathname !== '/student/onboarding' && pathname !== '/student/profile' && pathname !== '/student/groups') {
-    redirect('/student/onboarding');
-  }
-
   const lockedTooltip = "Complete onboarding to unlock.";
 
   const renderLockedItem = (icon: React.ReactNode, label: string) => (
