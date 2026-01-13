@@ -30,12 +30,18 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
+    // Simulate login and role setting
     setTimeout(() => {
         if (email.toLowerCase() === 'admin@protracks.com') {
+            localStorage.setItem('userRole', 'admin');
             router.push('/admin/dashboard');
         } else if (teachers.some(t => t.email.toLowerCase() === email.toLowerCase())) {
+            localStorage.setItem('userRole', 'teacher');
             router.push('/teacher/dashboard');
         } else {
+            // Assume student login for any other email for demo purposes
+            // In a real app, you'd find the student in the DB.
+            localStorage.setItem('userRole', 'student');
             router.push('/student/dashboard');
         }
     }, 1500)
@@ -112,14 +118,12 @@ export default function LoginPage() {
         <AlertDescription>
           <ul className="text-xs space-y-1 mt-2">
             <li><strong>Admin:</strong> <code>admin@protracks.com</code></li>
-            <li><strong>Teacher:</strong> <code>mukesh@protracks.com</code></li>
+            <li><strong>Teacher:</strong> Use any email from the teacher list, e.g., <code>mukesh@protracks.com</code></li>
+            <li><strong>Student:</strong> Any other email, or use the activation page.</li>
             <li>Any password will work for this demo.</li>
-            <li>Student accounts must be activated first.</li>
           </ul>
         </AlertDescription>
       </Alert>
     </div>
   );
 }
-
-    

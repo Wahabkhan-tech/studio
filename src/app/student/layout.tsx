@@ -1,17 +1,15 @@
 
-
+'use client';
 import Link from 'next/link';
 import {
-  Book,
   ClipboardList,
   Home,
   MessageSquare,
   Package,
   User,
-  Users,
-  ShieldQuestion,
-  Lock,
   Search,
+  Lock,
+  Users
 } from 'lucide-react';
 
 import {
@@ -24,26 +22,38 @@ import { Header } from '@/components/header';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { groups, students } from '@/lib/data';
 import { cn } from '@/lib/utils';
-import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
+import { useRoleGuard } from '@/hooks/use-role-guard';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
 
 export default function StudentLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = headers().get('next-url') || '';
+  const guard = useRoleGuard('student');
+  const pathname = usePathname();
   
-  // In a real app, this data would come from auth/session state.
-  // We simulate it here for demonstration.
-  const loggedInStudent = students.find(s => s.id === 'EB22210006139'); // Yasir
-  if (!loggedInStudent) {
-      redirect('/login/student');
+  // This state management is now client-side to avoid hydration errors
+  const [myGroup, setMyGroup] = useState<typeof groups[0] | undefined>(undefined);
+  const [isProfileComplete, setIsProfileComplete] = useState(false);
+  
+  useEffect(() => {
+    // In a real app, this data would come from auth/session state.
+    // We simulate it here for demonstration, running only on the client.
+    const loggedInStudent = students.find(s => s.id === 'EB22210006139'); // Yasir
+    const group = groups.find((g) => g.memberIds.includes(loggedInStudent?.id || ''));
+    setMyGroup(group);
+    setIsProfileComplete(group?.proposal.status === 'APPROVED');
+
+  }, [pathname]); // Rerun on path change to keep nav updated
+
+
+  if (guard) {
+    return guard;
   }
 
-  const myGroup = groups.find((g) => g.memberIds.includes(loggedInStudent.id));
-  const isProfileComplete = myGroup?.proposal.status === 'APPROVED';
-  
   const lockedTooltip = "Complete onboarding to unlock.";
 
   const renderLockedItem = (icon: React.ReactNode, label: string) => (

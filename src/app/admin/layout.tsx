@@ -1,3 +1,5 @@
+
+'use client';
 import Link from 'next/link';
 import {
   Book,
@@ -19,12 +21,19 @@ import {
 } from '@/components/ui/tooltip';
 import { Header } from '@/components/header';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { useRoleGuard } from '@/hooks/use-role-guard';
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const guard = useRoleGuard('admin');
+
+  if (guard) {
+    return guard;
+  }
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
