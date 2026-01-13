@@ -50,11 +50,13 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import type { Teacher } from '@/lib/types';
+import { useActivity } from '@/context/ActivityContext';
 
 export default function TeacherManagementPage() {
   const [teachers, setTeachers] = useState<Teacher[]>(initialTeachers);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+  const { addActivity } = useActivity();
 
   const handleAddTeacher = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -72,6 +74,7 @@ export default function TeacherManagementPage() {
     };
 
     setTeachers([newTeacher, ...teachers]);
+    addActivity(`New teacher "${newTeacher.name}" was added to the system.`, 'teacher');
     setIsDialogOpen(false);
     toast({
       title: 'Teacher Added',

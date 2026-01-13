@@ -55,11 +55,13 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import type { Student, Group } from '@/lib/types';
 import Link from 'next/link';
+import { useActivity } from '@/context/ActivityContext';
 
 export default function StudentManagementPage() {
   const [students, setStudents] = useState<Student[]>(initialStudents);
   const currentYear = new Date().getFullYear().toString();
   const [selectedSession, setSelectedSession] = useState<string>(currentYear);
+  const { addActivity } = useActivity();
   
   const filteredStudents = selectedSession === 'all' 
     ? students 
@@ -96,6 +98,7 @@ export default function StudentManagementPage() {
     };
 
     setStudents([newStudent, ...students]);
+    addActivity(`New student "${newStudent.name}" was added manually.`, 'student');
     setIsAddStudentDialogOpen(false);
     toast({
       title: 'Student Added',
@@ -120,6 +123,7 @@ export default function StudentManagementPage() {
     ];
     
     setStudents(prev => [...dummyStudents, ...prev]);
+    addActivity(`3 new students were added via bulk import.`, 'student');
   };
 
 

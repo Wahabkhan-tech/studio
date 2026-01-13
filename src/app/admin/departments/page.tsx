@@ -1,5 +1,3 @@
-
-
 'use client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -26,12 +24,14 @@ import { PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import type { Department } from '@/lib/types';
+import { useActivity } from '@/context/ActivityContext';
 
 export default function DepartmentManagementPage() {
   const [departments, setDepartments] = useState<Department[]>(initialDepartments);
   const [newDeptName, setNewDeptName] = useState('');
   const [newDeptHead, setNewDeptHead] = useState('');
   const { toast } = useToast();
+  const { addActivity } = useActivity();
 
   const handleAddDepartment = () => {
     if (!newDeptName.trim()) {
@@ -48,6 +48,7 @@ export default function DepartmentManagementPage() {
       head: newDeptHead || 'Unassigned',
     };
     setDepartments([...departments, newDepartment]);
+    addActivity(`New department "${newDeptName}" was created.`, 'department');
     setNewDeptName('');
     setNewDeptHead('');
     toast({
@@ -143,5 +144,3 @@ export default function DepartmentManagementPage() {
     </div>
   );
 }
-
-    

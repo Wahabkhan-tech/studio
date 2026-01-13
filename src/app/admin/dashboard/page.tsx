@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import {
   Activity,
@@ -25,8 +26,21 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { groups, students, teachers } from '@/lib/data';
+import { useActivity } from '@/context/ActivityContext';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+const iconMap: { [key: string]: React.ReactNode } = {
+  teacher: <Users className="h-8 w-8 text-muted-foreground" />,
+  proposal: <BookCheck className="h-8 w-8 text-muted-foreground" />,
+  group: <Package className="h-8 w-8 text-muted-foreground" />,
+  student: <Users className="h-8 w-8 text-muted-foreground" />,
+  system: <Activity className="h-8 w-8 text-muted-foreground" />,
+  department: <Activity className="h-8 w-8 text-muted-foreground" />,
+};
+
 
 export default function AdminDashboard() {
+  const { activities } = useActivity();
   const totalTeachers = teachers.length;
   const totalStudents = students.length;
   const activeGroups = groups.filter((g) => g.status === 'ACTIVE').length;
@@ -130,63 +144,36 @@ export default function AdminDashboard() {
             </Table>
           </CardContent>
         </Card>
-         <Card>
+         <Card className="flex flex-col">
             <CardHeader>
               <CardTitle>System Activity</CardTitle>
                <CardDescription>
                 A log of recent system-wide activities.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-8">
-              <div className="flex items-center gap-4">
-                <Users className="h-8 w-8 text-muted-foreground" />
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">
-                    New teacher "Sir Nadeem" was added.
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    by Admin User - 2 hours ago
-                  </p>
-                </div>
-              </div>
-               <div className="flex items-center gap-4">
-                <BookCheck className="h-8 w-8 text-muted-foreground" />
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">
-                    Proposal for "Group 4" was approved.
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    by Sir Mukesh - 5 hours ago
-                  </p>
-                </div>
-              </div>
-               <div className="flex items-center gap-4">
-                <Package className="h-8 w-8 text-muted-foreground" />
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">
-                    New group "Group 21" was created.
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    by Student Leader - 1 day ago
-                  </p>
-                </div>
-              </div>
-               <div className="flex items-center gap-4">
-                <Activity className="h-8 w-8 text-muted-foreground" />
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">
-                    System settings were updated.
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    by Admin User - 2 days ago
-                  </p>
-                </div>
-              </div>
+            <CardContent className="flex-1 grid gap-8">
+              <ScrollArea className="h-[300px]">
+                {activities.length > 0 ? activities.map((activity) => (
+                  <div key={activity.id} className="flex items-center gap-4 mb-4">
+                    {iconMap[activity.type] || iconMap['system']}
+                    <div className="grid gap-1">
+                      <p className="text-sm font-medium leading-none">
+                        {activity.message}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {activity.timestamp}
+                      </p>
+                    </div>
+                  </div>
+                )) : (
+                  <div className="text-center text-muted-foreground h-full flex items-center justify-center">
+                    <p>No recent activity.</p>
+                  </div>
+                )}
+              </ScrollArea>
             </CardContent>
           </Card>
       </div>
     </div>
   );
 }
-
-    
