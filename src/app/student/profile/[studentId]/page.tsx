@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { notFound } from 'next/navigation';
-import { User, Mail, School, Brain, Heart, Group as GroupIcon } from 'lucide-react';
+import { User, Brain, Heart, Group as GroupIcon } from 'lucide-react';
 import Link from 'next/link';
 
 export default function StudentProfilePage({ params }: { params: { studentId: string } }) {
