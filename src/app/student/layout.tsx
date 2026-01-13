@@ -22,7 +22,7 @@ import { Header } from '@/components/header';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { groups, students } from '@/lib/data';
 import { cn } from '@/lib/utils';
-import { useRoleGuard } from '@/hooks/use-role-guard';
+import { useRoleGuard } from '@/hooks/use-role-guard.tsx';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -35,19 +35,15 @@ export default function StudentLayout({
   const guard = useRoleGuard('student');
   const pathname = usePathname();
   
-  // This state management is now client-side to avoid hydration errors
   const [myGroup, setMyGroup] = useState<typeof groups[0] | undefined>(undefined);
   const [isProfileComplete, setIsProfileComplete] = useState(false);
   
   useEffect(() => {
-    // In a real app, this data would come from auth/session state.
-    // We simulate it here for demonstration, running only on the client.
-    const loggedInStudent = students.find(s => s.id === 'EB22210006139'); // Yasir
+    const loggedInStudent = students.find(s => s.id === 'EB22210006139');
     const group = groups.find((g) => g.memberIds.includes(loggedInStudent?.id || ''));
     setMyGroup(group);
-    setIsProfileComplete(group?.proposal.status === 'APPROVED');
-
-  }, [pathname]); // Rerun on path change to keep nav updated
+    setIsProfileComplete(!!group && group.proposal.status === 'APPROVED');
+  }, [pathname]);
 
 
   if (guard) {

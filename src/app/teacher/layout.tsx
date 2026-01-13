@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Header } from '@/components/header';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { useRoleGuard } from '@/hooks/use-role-guard';
+import { useRoleGuard } from '@/hooks/use-role-guard.tsx';
 
 export default function TeacherLayout({
   children,
