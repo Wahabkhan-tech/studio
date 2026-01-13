@@ -58,7 +58,13 @@ import Link from 'next/link';
 
 export default function StudentManagementPage() {
   const [students, setStudents] = useState<Student[]>(initialStudents);
-  const [filteredStudents, setFilteredStudents] = useState<Student[]>(initialStudents);
+  const currentYear = new Date().getFullYear().toString();
+  const [selectedSession, setSelectedSession] = useState<string>(currentYear);
+  
+  const filteredStudents = selectedSession === 'all' 
+    ? students 
+    : students.filter(s => s.session === selectedSession);
+
   const [groups, setGroups] = useState<Group[]>(allGroups);
   const [isAddStudentDialogOpen, setIsAddStudentDialogOpen] = useState(false);
   const [isAddToGroupDialogOpen, setIsAddToGroupDialogOpen] = useState(false);
@@ -67,11 +73,7 @@ export default function StudentManagementPage() {
   const { toast } = useToast();
   
   const handleSessionFilterChange = (session: string) => {
-    if (session === 'all') {
-      setFilteredStudents(students);
-    } else {
-      setFilteredStudents(students.filter(s => s.session === session));
-    }
+    setSelectedSession(session);
   };
 
   const handleAddStudent = (e: React.FormEvent<HTMLFormElement>) => {
@@ -94,7 +96,6 @@ export default function StudentManagementPage() {
     };
 
     setStudents([newStudent, ...students]);
-    setFilteredStudents([newStudent, ...students]);
     setIsAddStudentDialogOpen(false);
     toast({
       title: 'Student Added',
@@ -113,13 +114,12 @@ export default function StudentManagementPage() {
     });
 
     const dummyStudents: Student[] = [
-      { id: 'CSV001', name: 'CSV Student One', email: 'csv1@example.com', registrationNumber: 'CSV001', semester: 1, status: 'INACTIVE', avatar: '', skills: [], interests: '', department: 'Computer Science', class: 'BSCS', section: 'C', session: '2024' },
-      { id: 'CSV002', name: 'CSV Student Two', email: 'csv2@example.com', registrationNumber: 'CSV002', semester: 1, status: 'INACTIVE', avatar: '', skills: [], interests: '', department: 'Computer Science', class: 'BSCS', section: 'C', session: '2024' },
-      { id: 'CSV003', name: 'CSV Student Three', email: 'csv3@example.com', registrationNumber: 'CSV003', semester: 1, status: 'INACTIVE', avatar: '', skills: [], interests: '', department: 'Computer Science', class: 'BSCS', section: 'C', session: '2024' },
+      { id: 'CSV001', name: 'CSV Student One', email: 'csv1@example.com', registrationNumber: 'CSV001', semester: 1, status: 'INACTIVE', avatar: '', skills: [], interests: '', department: 'Computer Science', class: 'BSCS', section: 'C', session: currentYear },
+      { id: 'CSV002', name: 'CSV Student Two', email: 'csv2@example.com', registrationNumber: 'CSV002', semester: 1, status: 'INACTIVE', avatar: '', skills: [], interests: '', department: 'Computer Science', class: 'BSCS', section: 'C', session: currentYear },
+      { id: 'CSV003', name: 'CSV Student Three', email: 'csv3@example.com', registrationNumber: 'CSV003', semester: 1, status: 'INACTIVE', avatar: '', skills: [], interests: '', department: 'Computer Science', class: 'BSCS', section: 'C', session: currentYear },
     ];
     
     setStudents(prev => [...dummyStudents, ...prev]);
-    setFilteredStudents(prev => [...dummyStudents, ...prev]);
   };
 
 
@@ -127,11 +127,9 @@ export default function StudentManagementPage() {
     studentId: string,
     newStatus: Student['status']
   ) => {
-    const update = (studentList: Student[]) => studentList.map((s) =>
+    setStudents(prev => prev.map((s) =>
         s.id === studentId ? { ...s, status: newStatus } : s
-      );
-    setStudents(update);
-    setFilteredStudents(update);
+      ));
     toast({
       title: 'Status Updated',
       description: `Student status has been changed to ${newStatus}.`,
@@ -192,7 +190,7 @@ export default function StudentManagementPage() {
                 </CardDescription>
               </div>
               <div className="w-48">
-                <Select onValueChange={handleSessionFilterChange} defaultValue="all">
+                <Select onValueChange={handleSessionFilterChange} defaultValue={currentYear}>
                     <SelectTrigger>
                         <SelectValue placeholder="Filter by session" />
                     </SelectTrigger>
@@ -415,7 +413,7 @@ export default function StudentManagementPage() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="session">Session</Label>
-                        <Input id="session" name="session" defaultValue="2024" />
+                        <Input id="session" name="session" defaultValue={currentYear} />
                       </div>
                     </div>
                     <div className="space-y-2">
