@@ -6,10 +6,11 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
-import { groups, teachers, sessions as initialSessions } from '@/lib/data';
+import { groups, teachers, sessions as initialSessions, students } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,13 +26,17 @@ import {
 } from '@/components/ui/dialog';
 import type { Session } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function SessionManagementPage() {
   const loggedInTeacherId = 'T01';
   const teacherGroups = groups.filter((g) => g.supervisorId === loggedInTeacherId);
   
   const [sessions, setSessions] = useState<Session[]>(initialSessions);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const { toast } = useToast();
 
   const handleScheduleSession = (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,16 +63,31 @@ export default function SessionManagementPage() {
         attendees: [],
     }));
 
-    setSessions([...sessions, ...newSessions]);
-    setIsDialogOpen(false);
+    setSessions([...newSessions, ...sessions]);
+    setIsScheduleDialogOpen(false);
     toast({
         title: "Session Scheduled!",
         description: `Scheduled "${title}" for ${selectedGroupIds.length} group(s).`
     })
   };
 
-  const upcomingSessions = sessions.filter(s => new Date(s.date) >= new Date());
-  const pastSessions = sessions.filter(s => new Date(s.date) < new Date());
+  const handleViewDetails = (session: Session) => {
+    setSelectedSession(session);
+    setIsDetailDialogOpen(true);
+  };
+
+  const upcomingSessions = sessions.filter(s => new Date(s.date) >= new Date() && teacherGroups.some(g => g.id === s.groupId));
+  const pastSessions = sessions.filter(s => new Date(s.date) < new Date() && teacherGroups.some(g => g.id === s.groupId));
+  
+  const getAvatarUrl = (id: string) => {
+    const student = students.find((s) => s.id === id);
+    if (!student) return undefined;
+    return PlaceHolderImages.find((p) => p.id === student.avatar)?.imageUrl;
+  };
+  
+  const sessionGroup = selectedSession ? groups.find(g => g.id === selectedSession.groupId) : null;
+  const sessionMembers = sessionGroup ? students.filter(s => sessionGroup.memberIds.includes(s.id)) : [];
+
 
   return (
     <div className="space-y-6">
@@ -78,7 +98,7 @@ export default function SessionManagementPage() {
             Schedule, and review academic sessions with your groups.
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isScheduleDialogOpen} onOpenChange={setIsScheduleDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" />
@@ -148,7 +168,7 @@ export default function SessionManagementPage() {
                         Date: {new Date(session.date).toLocaleDateString()}
                       </p>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => handleViewDetails(session)}>
                       View Details
                     </Button>
                   </CardContent>
@@ -184,7 +204,7 @@ export default function SessionManagementPage() {
                     </div>
                     <div className="flex gap-2 items-center">
                       <Badge variant="secondary">COMPLETED</Badge>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => handleViewDetails(session)}>
                         View Summary
                       </Button>
                     </div>
@@ -199,6 +219,46 @@ export default function SessionManagementPage() {
           )}
         </CardContent>
       </Card>
+
+      {selectedSession && sessionGroup && (
+         <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Session: {selectedSession.title}</DialogTitle>
+                    <DialogDescription>
+                        For group "{sessionGroup.name}" on {new Date(selectedSession.date).toLocaleDateString()}
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                    <h4 className="font-semibold mb-2">Attendance</h4>
+                    <div className="space-y-2">
+                        {sessionMembers.map(member => (
+                            <div key={member.id} className="flex justify-between items-center p-2 border rounded-md">
+                                <div className="flex items-center gap-2">
+                                     <Avatar className='h-8 w-8'>
+                                        <AvatarImage src={getAvatarUrl(member.id)} />
+                                        <AvatarFallback>
+                                            {member.name.charAt(0)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <span>{member.name}</span>
+                                </div>
+                                <Badge variant={selectedSession.attendees.includes(member.id) ? 'default' : 'destructive'}>
+                                    {selectedSession.attendees.includes(member.id) ? 'Present' : 'Absent'}
+                                </Badge>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                 <div className="py-4">
+                    <h4 className="font-semibold mb-2">Session Summary/Notes</h4>
+                    <p className='text-sm text-muted-foreground p-3 bg-muted/50 rounded-md border'>
+                        This is where a summary of the session would appear. For this demo, no notes have been recorded.
+                    </p>
+                </div>
+            </DialogContent>
+         </Dialog>
+      )}
     </div>
   );
 }

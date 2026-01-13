@@ -58,12 +58,21 @@ import Link from 'next/link';
 
 export default function StudentManagementPage() {
   const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [filteredStudents, setFilteredStudents] = useState<Student[]>(initialStudents);
   const [groups, setGroups] = useState<Group[]>(allGroups);
   const [isAddStudentDialogOpen, setIsAddStudentDialogOpen] = useState(false);
   const [isAddToGroupDialogOpen, setIsAddToGroupDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
   const { toast } = useToast();
+  
+  const handleSessionFilterChange = (session: string) => {
+    if (session === 'all') {
+      setFilteredStudents(students);
+    } else {
+      setFilteredStudents(students.filter(s => s.session === session));
+    }
+  };
 
   const handleAddStudent = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -81,26 +90,48 @@ export default function StudentManagementPage() {
       department: 'Computer Science',
       class: 'BSCS',
       section: 'A',
-      session: '2024',
+      session: formData.get('session') as string,
     };
 
     setStudents([newStudent, ...students]);
+    setFilteredStudents([newStudent, ...students]);
     setIsAddStudentDialogOpen(false);
     toast({
       title: 'Student Added',
       description: `${newStudent.name} has been added to the registry.`,
     });
   };
+  
+  const handleBulkUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // This is a simulation. In a real app, you would parse the CSV.
+    toast({
+      title: 'File uploaded!',
+      description: `Simulating import for "${file.name}". Adding 3 dummy students.`,
+    });
+
+    const dummyStudents: Student[] = [
+      { id: 'CSV001', name: 'CSV Student One', email: 'csv1@example.com', registrationNumber: 'CSV001', semester: 1, status: 'INACTIVE', avatar: '', skills: [], interests: '', department: 'Computer Science', class: 'BSCS', section: 'C', session: '2024' },
+      { id: 'CSV002', name: 'CSV Student Two', email: 'csv2@example.com', registrationNumber: 'CSV002', semester: 1, status: 'INACTIVE', avatar: '', skills: [], interests: '', department: 'Computer Science', class: 'BSCS', section: 'C', session: '2024' },
+      { id: 'CSV003', name: 'CSV Student Three', email: 'csv3@example.com', registrationNumber: 'CSV003', semester: 1, status: 'INACTIVE', avatar: '', skills: [], interests: '', department: 'Computer Science', class: 'BSCS', section: 'C', session: '2024' },
+    ];
+    
+    setStudents(prev => [...dummyStudents, ...prev]);
+    setFilteredStudents(prev => [...dummyStudents, ...prev]);
+  };
+
 
   const handleStatusChange = (
     studentId: string,
     newStatus: Student['status']
   ) => {
-    setStudents(
-      students.map((s) =>
+    const update = (studentList: Student[]) => studentList.map((s) =>
         s.id === studentId ? { ...s, status: newStatus } : s
-      )
-    );
+      );
+    setStudents(update);
+    setFilteredStudents(update);
     toast({
       title: 'Status Updated',
       description: `Student status has been changed to ${newStatus}.`,
@@ -153,10 +184,26 @@ export default function StudentManagementPage() {
       <div className="md:col-span-3">
         <Card>
           <CardHeader>
-            <CardTitle>Student Management</CardTitle>
-            <CardDescription>
-              View and manage all student accounts in the system.
-            </CardDescription>
+             <div className='flex justify-between items-center'>
+              <div>
+                <CardTitle>Student Management</CardTitle>
+                <CardDescription>
+                  View and manage all student accounts in the system.
+                </CardDescription>
+              </div>
+              <div className="w-48">
+                <Select onValueChange={handleSessionFilterChange} defaultValue="all">
+                    <SelectTrigger>
+                        <SelectValue placeholder="Filter by session" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Sessions</SelectItem>
+                        <SelectItem value="2024">2024 Session</SelectItem>
+                        <SelectItem value="2023">2023 Session</SelectItem>
+                    </SelectContent>
+                </Select>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <Table>
@@ -174,7 +221,7 @@ export default function StudentManagementPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {students.map((student) => {
+                {filteredStudents.map((student) => {
                   const avatar = PlaceHolderImages.find(
                     (img) => img.id === student.avatar
                   );
@@ -277,7 +324,7 @@ export default function StudentManagementPage() {
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">
-              Showing <strong>1-{students.length}</strong> of{' '}
+              Showing <strong>1-{filteredStudents.length}</strong> of{' '}
               <strong>{students.length}</strong> students
             </div>
           </CardFooter>
@@ -405,7 +452,7 @@ export default function StudentManagementPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="csv-file">Upload CSV File</Label>
-              <Input id="csv-file" type="file" accept=".csv" />
+              <Input id="csv-file" type="file" accept=".csv" onChange={handleBulkUpload}/>
             </div>
             <p className="text-xs text-muted-foreground">
               Ensure your CSV has columns: <br /> `name`, `seat_number`,
@@ -413,12 +460,7 @@ export default function StudentManagementPage() {
             </p>
             <Button
               className="w-full"
-              onClick={() =>
-                toast({
-                  title: 'File uploaded!',
-                  description: "Processing is simulated and won't add students.",
-                })
-              }
+              onClick={() => document.getElementById('csv-file')?.click()}
             >
               <Upload className="mr-2 h-4 w-4" />
               Upload and Process File
